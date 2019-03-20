@@ -1,13 +1,13 @@
-Repositório de Sistemas Distribuidos
+# Repositório de Sistemas Distribuidos
 
-Lucas Giovanni de Castro Ribeiro
-José Moscardi
+###### Lucas Giovanni de Castro Ribeiro
+###### José Moscardi
 
-EXERCÍCIOS
+### EXERCÍCIOS
 
 	Multicast
 
-TRABALHOS
+### TRABALHOS
 
 	Sockets
 	Java RMI
