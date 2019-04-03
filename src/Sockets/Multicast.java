@@ -1,31 +1,39 @@
 package Sockets;
 
-import java.io.*;
-import java.net.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.UUID;
+import Sockets.Controller.Controle;
 
-public class Multicast{
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
 
-    private String mensagem;
+public class Multicast {
+
     private static int port;
     private static InetAddress group;
     private static MulticastSocket socket;
+    private String mensagem;
 
-    Multicast(int port, InetAddress group, MulticastSocket socket, Controle controle){
-       this.port = port;
-       this.group = group;
-       this.socket = socket;
-       new Send("ola");
-       new Receive(controle).start();
+    public Multicast(int port, InetAddress group, MulticastSocket socket, Controle controle) {
+        Multicast.port = port;
+        Multicast.group = group;
+        Multicast.socket = socket;
+        new Send("ola");
+        new Receive(controle).start();
     }
 
-    public static class Send{
-        Send(String msg){
+    public String getMensagem() {
+        return mensagem;
+    }
+
+    private void setMensagem(String msg) {
+        mensagem = msg;
+    }
+
+    public static class Send {
+        Send(String msg) {
             try {
-                byte [] m = msg.getBytes();
+                byte[] m = msg.getBytes();
                 DatagramPacket messageOut = new DatagramPacket(m, m.length, group, port);
                 socket.send(messageOut);
             } catch (IOException e) {
@@ -34,17 +42,17 @@ public class Multicast{
         }
     }
 
-    private class Receive extends Thread{
+    private class Receive extends Thread {
         String msg = "";
         private Controle controle;
 
-        Receive(Controle controle){
+        Receive(Controle controle) {
             this.controle = controle;
         }
 
         @Override
         public void run() {
-            while(!msg.equals("exit")) {
+            while (!msg.equals("exit")) {
                 byte[] buffer = new byte[1000];
                 //for (int i = 0; i < 3; i++) {        // get messages from others in group
                 DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
@@ -56,17 +64,10 @@ public class Multicast{
                 msg = new String(messageIn.getData()).trim();
                 setMensagem(msg);
 
-                if (msg.equals("ola")){
+                if (msg.equals("ola")) {
                     controle.start();
                 }
             }
         }
-    }
-
-    private void setMensagem(String msg) {
-        mensagem = msg;
-    }
-    public String getMensagem(){
-        return mensagem;
     }
 }

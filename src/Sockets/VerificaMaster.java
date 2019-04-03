@@ -1,14 +1,16 @@
 package Sockets;
 
+import Sockets.Controller.Controle;
+
 import java.util.TimerTask;
 
 public class VerificaMaster extends TimerTask {
 
+    public Master master;
     Controle controle;
-    Master master;
     String id;
 
-    VerificaMaster(Controle controle, String id){
+    public VerificaMaster(Controle controle, String id) {
         this.controle = controle;
         this.id = id;
         master = new Master();
@@ -16,24 +18,25 @@ public class VerificaMaster extends TimerTask {
 
     @Override
     public void run() {
-        if (controle.multicast.getMensagem().startsWith("master ativo/")){
-            String master[] = controle.multicast.getMensagem().split("/");
+        if (controle.multicast.getMensagem().startsWith("master ativo/")) {
+            String[] master = controle.multicast.getMensagem().split("/");
             this.master.setMaster(master[1]);
-        }
-        else {
+        } else {
             this.master.setMaster(id);
             controle.masterAtivo();
             this.cancel();
         }
     }
 
-    public class Master{
+    public class Master {
         String master = " ";
-        private void setMaster(String master){
-            this.master = master;
-        }
-        public String getMaster(){
+
+        public String getMaster() {
             return master;
+        }
+
+        private void setMaster(String master) {
+            this.master = master;
         }
     }
 }

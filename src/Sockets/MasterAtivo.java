@@ -6,7 +6,7 @@ public class MasterAtivo extends TimerTask {
 
     String id;
 
-    MasterAtivo(String id){
+    public MasterAtivo(String id) {
         this.id = id;
     }
 

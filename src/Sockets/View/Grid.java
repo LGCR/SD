@@ -1,11 +1,13 @@
-package Sockets;
+package Sockets.View;
+
+import Sockets.Controller.Controle;
 
 import java.util.TimerTask;
 
 public class Grid extends TimerTask {
     Controle controle;
 
-    Grid(Controle controle){
+    public Grid(Controle controle) {
         this.controle = controle;
         warn();
     }
