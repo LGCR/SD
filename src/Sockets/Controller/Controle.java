@@ -1,30 +1,28 @@
 package Sockets.Controller;
 
-import Sockets.*;
+import Sockets.MasterAtivo;
 import Sockets.Model.Processo;
+import Sockets.VerificaMaster;
 import Sockets.View.Grid;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.security.PrivateKey;
-import java.sql.Time;
 import java.util.Timer;
 import java.util.UUID;
 
 public class Controle extends Thread {
     public String id;
-    public Multicast multicast;
+    public ControleMulticast controleMulticast;
     public VerificaMaster verificaMaster;
     PrivateKey privateKey;
-    MulticastSocket multisocket;
+
     DatagramSocket unisocket;
-    InetAddress group;
+
     int port = 6789;
     Grid grid;
-    String multicastIP = "228.5.6.7";
+
     RelogioDigital relogioDigital;
     Processo processo;
     MasterAtivo masterAtivo;
@@ -35,10 +33,11 @@ public class Controle extends Thread {
         //Instancia do relogio digital
         this.relogioDigital = new RelogioDigital(false, 100L);
 
+        //Aqui será instanciado a classe de controle ControleMulticast
+        this.controleMulticast = new ControleMulticast(this);
 
 
         geraID();
-        estabeleceMulticast();
         verificaMaster();
         criaProcesso();
         imprimeGrid();
@@ -46,12 +45,15 @@ public class Controle extends Thread {
         //iniciando Threads
 
         //iniciamdo thread do relógio digital
-        (new Timer()).schedule(this.relogioDigital,this.relogioDigital.getTaxaAtualizacao(),this.relogioDigital.getTaxaAtualizacao());
+        (new Timer()).schedule(this.relogioDigital, this.relogioDigital.getTaxaAtualizacao(), this.relogioDigital.getTaxaAtualizacao());
+
+        //Iniciando listener multisoket
+        this.controleMulticast.run();
     }
 
     public void masterAtivo() {
         Timer timer = new Timer();
-        masterAtivo = new MasterAtivo(id);
+        masterAtivo = new MasterAtivo(id, this);
         timer.schedule(masterAtivo, 1000, 1000);
     }
 
@@ -63,13 +65,6 @@ public class Controle extends Thread {
         Timer timer = new Timer();
         verificaMaster = new VerificaMaster(this, id);
         timer.schedule(verificaMaster, 5000, 5000);
-    }
-
-    private void estabeleceMulticast() throws IOException {
-        group = InetAddress.getByName(multicastIP);
-        multisocket = new MulticastSocket(port);
-        multisocket.joinGroup(group);
-        multicast = new Multicast(port, group, multisocket, this);
     }
 
     private void imprimeGrid() {
@@ -87,11 +82,10 @@ public class Controle extends Thread {
 
     @Override
     public void run() {
-        String msg = "";
 
-        while (!msg.equals("exit")) {
-            msg = multicast.getMensagem();
-            if (msg.equals("ola")) {
+        while (!(this.controleMulticast.ultimaMensagem).equals("exit")) {
+
+            if ((this.controleMulticast.ultimaMensagem).equals("ola")) {
                 masterAtivo();
             }
         }

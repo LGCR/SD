@@ -22,8 +22,8 @@ public class Grid extends TimerTask {
         System.out.println("| MY PROCESS ID: " + controle.id + " -------------------------------|");
         System.out.println("| MASTER: " + controle.verificaMaster.master.getMaster() + " --------------------------------------|");
         System.out.print("| SLAVES: ");
-        /*for(int i = 0; i < multicast.self.getSlaveSize(); i++){
-            System.out.print(multicast.self.getSlave(i) + "-");
+        /*for(int i = 0; i < controleMulticast.self.getSlaveSize(); i++){
+            System.out.print(controleMulticast.self.getSlave(i) + "-");
         }*/
         System.out.println("|");
         System.out.println("|--------------------------------------------------|");

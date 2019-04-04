@@ -18,8 +18,8 @@ public class VerificaMaster extends TimerTask {
 
     @Override
     public void run() {
-        if (controle.multicast.getMensagem().startsWith("master ativo/")) {
-            String[] master = controle.multicast.getMensagem().split("/");
+        if (controle.controleMulticast.ultimaMensagem.startsWith("master ativo/")) {
+            String[] master = controle.controleMulticast.ultimaMensagem.split("/");
             this.master.setMaster(master[1]);
         } else {
             this.master.setMaster(id);

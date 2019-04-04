@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        //Multicast m = new Multicast();
+        //ControleMulticast m = new ControleMulticast();
         //m.start();
         /*Timer timer = new Timer();
          */
