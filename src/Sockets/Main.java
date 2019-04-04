@@ -1,4 +1,4 @@
-package Sockets.Main;
+package Sockets;
 
 import Sockets.Controller.Controle;
 

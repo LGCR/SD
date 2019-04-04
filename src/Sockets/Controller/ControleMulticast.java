@@ -36,7 +36,10 @@ public class ControleMulticast implements Runnable {
         try {
 
             //Esse comando retorna uma porta do SO que esteja disponível para o uso
-            this.porta = (new ServerSocket(0)).getLocalPort();
+            //this.porta = (new ServerSocket(0)).getLocalPort();
+
+            //Estabelece a porta de conexão multicast
+            this.porta = 6789;
 
             this.multicastSocket = new MulticastSocket(this.porta);
 
@@ -111,8 +114,10 @@ public class ControleMulticast implements Runnable {
              * O CÓDIGO ABAIXO DEVE SER APAGADO NO FUTURO
              */
 
-            if (((Arrays.toString(mensagemRecebida.getData())).trim()).equals("ola")) {
+            System.out.println((new String(mensagemRecebida.getData()).trim()));
+            if (((new String(mensagemRecebida.getData()).trim())).equals("ola")) {
                 this.ultimaMensagem = (Arrays.toString(mensagemRecebida.getData())).trim();
+                System.out.println(this.ultimaMensagem);
                 if (!this.controle.isAlive())
                     this.controle.start();
             }
