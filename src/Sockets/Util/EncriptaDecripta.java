@@ -1,4 +1,4 @@
-package Util;
+package Sockets.Util;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -14,16 +14,15 @@ public class EncriptaDecripta {
     private PrivateKey chavePrivada;
     private PublicKey chavePublica;
 
-    /**
-     * Gera a chave que contém um par de chave Privada e Pública usando 1025
-     * bytes. Armazena o conjunto de chaves nas variáveis chavePrivade
-     * e chavePublica
-     */
-    private KeyPair geraChave() throws NoSuchAlgorithmException {
-
-        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM);
-        keyGen.initialize(1024);
-        return keyGen.generateKeyPair();
+    public EncriptaDecripta() {
+        try {
+            KeyPair temp = this.geraChave();
+            this.chavePrivada = temp.getPrivate();
+            this.chavePublica = temp.getPublic();
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(EncriptaDecripta.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(1);
+        }
     }
 
     /**
@@ -65,15 +64,16 @@ public class EncriptaDecripta {
         return new String(dectyptedText);
     }
 
-    public EncriptaDecripta() {
-        try {
-            KeyPair temp = this.geraChave();
-            this.chavePrivada = temp.getPrivate();
-            this.chavePublica = temp.getPublic();
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(EncriptaDecripta.class.getName()).log(Level.SEVERE, null, ex);
-            System.exit(1);
-        }
+    /**
+     * Gera a chave que contém um par de chave Privada e Pública usando 1025
+     * bytes. Armazena o conjunto de chaves nas variáveis chavePrivade
+     * e chavePublica
+     */
+    private KeyPair geraChave() throws NoSuchAlgorithmException {
+
+        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance(ALGORITHM);
+        keyGen.initialize(1024);
+        return keyGen.generateKeyPair();
     }
 
     public PrivateKey getChavePrivada() {

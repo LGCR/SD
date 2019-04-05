@@ -1,6 +1,5 @@
 package Sockets.Controller;
 
-import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,11 +8,13 @@ import java.util.TimerTask;
 
 class RelogioDigital extends TimerTask {
 
-    //variável que armazenará o tempo do relógio digital
-    private Long miliSegundos;
+    //variável determina de quanto em quanto tempo será executado a adição de milesegundos e sus respectiva quantidade
     private final Long taxaAtualizacao;
 
-    public RelogioDigital(@NotNull Boolean aleatoriedade, Long refreshRate) {
+    //variável que armazenará o tempo do relógio digital
+    private Long miliSegundos;
+
+    public RelogioDigital(Boolean aleatoriedade, Long refreshRate) {
 
         //Aqui iniciamos os milisegudnos do relógio com o tempo atual do sistema
         this.miliSegundos = System.currentTimeMillis();
@@ -43,15 +44,15 @@ class RelogioDigital extends TimerTask {
 
     //essa função irá retornar o tempo no formato hora:minuto:segundo
     public String getHorario() {
-        return new SimpleDateFormat("HH:mm:ss").format(new Date (this.miliSegundos));
+        return new SimpleDateFormat("HH:mm:ss").format(new Date(this.miliSegundos));
     }
 
     //retorna o tempo do relógio em milesegundos
-    public Long getTempo(){
+    public Long getTempo() {
         return this.miliSegundos;
     }
 
-    public Long getTaxaAtualizacao(){
+    public Long getTaxaAtualizacao() {
         return this.taxaAtualizacao;
     }
 

@@ -1,19 +1,20 @@
 package Sockets.Controller;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 
 public class ControleMulticast implements Runnable {
 
     //Essa variável armazena o IP controleMulticast que o processo usará para se conectar
     private static final String ip = "228.5.6.7";
-
+    private final Controle controle;
+    public java.lang.String ultimaMensagem = "";
     //Essa variável armazena a porta onde ficará conectado o soket multicast
     private int porta;
-
-    private final Controle controle;
-
     //Essa variável armazena o objeto que irá lidar com ControleMulticast
     private MulticastSocket multicastSocket;
 
@@ -75,7 +76,7 @@ public class ControleMulticast implements Runnable {
     }
 
     //Essa função irá enviar uma mensagem para o grupo controleMulticast
-    public void enviarMensagem(byte[] mensagem) {
+    public synchronized void enviarMensagem(byte[] mensagem) {
 
         try {
             this.multicastSocket.send(new DatagramPacket(mensagem, mensagem.length, this.multicastSocket.getInterface(), this.porta));
@@ -89,19 +90,21 @@ public class ControleMulticast implements Runnable {
     @Override
     public void run() {
 
-        while (!(this.ultimaMensagem).equals("exit")) {
 
-            //Aqui será instanciado o datagrama para recebimento de mensagens multicasta com 0.5 MB de buffer
-            DatagramPacket mensagemRecebida = new DatagramPacket(new byte[500000], 500000);
+        //Aqui será instanciado o datagrama para recebimento de mensagens multicasta com 0.5 MB de buffer
+        DatagramPacket mensagemRecebida = new DatagramPacket(new byte[500000], 500000);
 
-            //Aquui está o listener bloqueante que escutara o socket controleMulticast
-            try {
-                this.multicastSocket.receive(mensagemRecebida);
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("Falha ao receber mensagem controleMulticast! Reiniciando a Thread");
-                return;
-            }
+        //Aquui está o listener bloqueante que escutara o socket controleMulticast
+        try {
+            this.multicastSocket.receive(mensagemRecebida);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Falha ao receber mensagem controleMulticast! Reiniciando a Thread");
+            return;
+        }
+
+        //reinicia uma nova thread visto que essa irá executar o call e stack e morrer
+        this.run();
 
             /*
               Aqui deverá ser chamada alguma função de controle da classe controle para tratar o array de byte recebido.
@@ -110,18 +113,16 @@ public class ControleMulticast implements Runnable {
               O CÓDIGO ABAIXO DEVE SER APAGADO NO FUTURO
              */
 
-            System.out.println((new String(mensagemRecebida.getData()).trim()));
-            if (((new String(mensagemRecebida.getData()).trim())).equals("ola")) {
-                this.ultimaMensagem = (Arrays.toString(mensagemRecebida.getData())).trim();
-                System.out.println(this.ultimaMensagem);
-                if (!this.controle.isAlive())
-                    this.controle.start();
-            }
+        System.out.println((new String(mensagemRecebida.getData()).trim()));
+        if (((new String(mensagemRecebida.getData()).trim())).equals("ola")) {
+            this.ultimaMensagem = (Arrays.toString(mensagemRecebida.getData())).trim();
+            System.out.println(this.ultimaMensagem);
+            if (!this.controle.isAlive())
+                this.controle.start();
         }
 
-    }
 
-    public java.lang.String ultimaMensagem = "";
+    }
 
 }
 /*
