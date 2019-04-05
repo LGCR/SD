@@ -7,11 +7,11 @@ import java.util.Date;
 import java.util.Random;
 import java.util.TimerTask;
 
-public class RelogioDigital extends TimerTask {
+class RelogioDigital extends TimerTask {
 
     //variável que armazenará o tempo do relógio digital
     private Long miliSegundos;
-    private Long taxaAtualizacao;
+    private final Long taxaAtualizacao;
 
     public RelogioDigital(@NotNull Boolean aleatoriedade, Long refreshRate) {
 
@@ -61,7 +61,7 @@ public class RelogioDigital extends TimerTask {
     }
 
     //função realizar soma na variável de tempo, serve para realizar ajustes e incrementar o tempo
-    synchronized public void somarTempo(Long millisegundos) {
+    private synchronized void somarTempo(Long millisegundos) {
         this.miliSegundos += miliSegundos;
     }
 

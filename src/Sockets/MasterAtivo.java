@@ -1,14 +1,13 @@
 package Sockets;
 
 import Sockets.Controller.Controle;
-import Sockets.Controller.ControleMulticast;
 
 import java.util.TimerTask;
 
 public class MasterAtivo extends TimerTask {
 
-    String id;
-    Controle controle;
+    private final String id;
+    private final Controle controle;
 
     public MasterAtivo(String id, Controle controle) {
         this.controle = controle;

@@ -6,9 +6,9 @@ import java.util.TimerTask;
 
 public class VerificaMaster extends TimerTask {
 
-    public Master master;
-    Controle controle;
-    String id;
+    public final Master master;
+    private final Controle controle;
+    private final String id;
 
     public VerificaMaster(Controle controle, String id) {
         this.controle = controle;

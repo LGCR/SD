@@ -5,7 +5,7 @@ import Sockets.Controller.Controle;
 import java.util.TimerTask;
 
 public class Grid extends TimerTask {
-    Controle controle;
+    private final Controle controle;
 
     public Grid(Controle controle) {
         this.controle = controle;

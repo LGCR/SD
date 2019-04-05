@@ -7,12 +7,12 @@ import java.util.Arrays;
 public class ControleMulticast implements Runnable {
 
     //Essa variável armazena o IP controleMulticast que o processo usará para se conectar
-    private static String ip = "228.5.6.7";
+    private static final String ip = "228.5.6.7";
 
     //Essa variável armazena a porta onde ficará conectado o soket multicast
     private int porta;
 
-    private Controle controle;
+    private final Controle controle;
 
     //Essa variável armazena o objeto que irá lidar com ControleMulticast
     private MulticastSocket multicastSocket;
@@ -25,7 +25,7 @@ public class ControleMulticast implements Runnable {
         //Aqui será instanciado o objeto do tipo InetAdrres através de um IP pré selecionado
         InetAddress grupo = null;
         try {
-            grupo = InetAddress.getByName(this.ip);
+            grupo = InetAddress.getByName(ip);
         } catch (UnknownHostException e) {
             e.printStackTrace();
             System.out.println("Falha ao encontrar endereço de IP");
@@ -59,14 +59,14 @@ public class ControleMulticast implements Runnable {
         //Aqui será enviada uma mensagem de 'olá' para todo o grupo controleMulticast
         this.enviarMensagem(("ola").getBytes());
 
-        /**
-         * A thread de recebimento deve ser iniciada na classe Controle para manter a orientação a objeto
+        /*
+          A thread de recebimento deve ser iniciada na classe Controle para manter a orientação a objeto
          */
     }
 
     //Essa função retorna o IP ultilizado na comunicação multicast
     public String getIPMulticast() {
-        return this.ip;
+        return ip;
     }
 
     //Essa função retorna a porta atualmente ultilizada
@@ -75,18 +75,14 @@ public class ControleMulticast implements Runnable {
     }
 
     //Essa função irá enviar uma mensagem para o grupo controleMulticast
-    public Boolean enviarMensagem(byte[] mensagem) {
-        Boolean retorno = true;
+    public void enviarMensagem(byte[] mensagem) {
 
         try {
             this.multicastSocket.send(new DatagramPacket(mensagem, mensagem.length, this.multicastSocket.getInterface(), this.porta));
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Erro ao enviar mensagem para grupo controleMulticast");
-            retorno = false;
         }
-
-        return retorno;
     }
 
     //Essa será a função de thread e será o Listener de mensagens controleMulticast
@@ -107,11 +103,11 @@ public class ControleMulticast implements Runnable {
                 return;
             }
 
-            /**
-             * Aqui deverá ser chamada alguma função de controle da classe controle para tratar o array de byte recebido.
-             * Para manter a integridade do software até o momento será escrito um código provisorio, para que o mesmo
-             * continue funcionando sem complicações.
-             * O CÓDIGO ABAIXO DEVE SER APAGADO NO FUTURO
+            /*
+              Aqui deverá ser chamada alguma função de controle da classe controle para tratar o array de byte recebido.
+              Para manter a integridade do software até o momento será escrito um código provisorio, para que o mesmo
+              continue funcionando sem complicações.
+              O CÓDIGO ABAIXO DEVE SER APAGADO NO FUTURO
              */
 
             System.out.println((new String(mensagemRecebida.getData()).trim()));
