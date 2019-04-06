@@ -1,17 +1,22 @@
 package Sockets;
 
+import Sockets.Controller.Controle;
+
 import java.util.TimerTask;
 
 public class MasterAtivo extends TimerTask {
 
-    String id;
+    private final String id;
+    private final Controle controle;
 
-    MasterAtivo(String id){
+    public MasterAtivo(String id, Controle controle) {
+        this.controle = controle;
         this.id = id;
+
     }
 
     @Override
     public void run() {
-        new Multicast.Send("master ativo/" + id);
+        this.controle.controleMulticast.enviarMensagem(("master ativo/" + id).getBytes());
     }
 }
