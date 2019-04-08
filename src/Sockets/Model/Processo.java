@@ -3,30 +3,22 @@ package Sockets.Model;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.InetAddress;
+import java.security.Key;
+import java.security.PublicKey;
 
 public class Processo implements Comparable{
     private String identificador;
     private InetAddress endereco;
     private int porta;
-    private String publicKey;
+    private PublicKey chavePublica;
     private Boolean master;
-    private Long timeLastContact;
 
-    public Processo(String identificador, InetAddress endereco, int porta, String publicKey, Boolean master, Long timeLastContact) {
+    public Processo(String identificador, InetAddress endereco, int porta, PublicKey chavePublica, Boolean master) {
         this.identificador = identificador;
         this.endereco = endereco;
         this.porta = porta;
-        this.publicKey = publicKey;
+        this.chavePublica = chavePublica;
         this.master = master;
-        this.timeLastContact = timeLastContact;
-    }
-
-    public Long getTimeLastContact() {
-        return timeLastContact;
-    }
-
-    public void setTimeLastContact(Long timeLastContact) {
-        this.timeLastContact = timeLastContact;
     }
 
     public String getIdentificador() {
@@ -53,12 +45,12 @@ public class Processo implements Comparable{
         this.porta = porta;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public PublicKey getChavePublica() {
+        return chavePublica;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public void setChavePublica(PublicKey chavePublica) {
+        this.chavePublica = chavePublica;
     }
 
     public Boolean getMaster() {

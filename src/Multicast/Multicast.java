@@ -19,7 +19,7 @@ public class Multicast extends Thread {
             s = new MulticastSocket(6789);
             s.joinGroup(group);
             while (!msg.equals("exit")) {
-                System.out.println("Digite Mensagem");
+                System.out.println("Digite PacoteMensagem");
                 Scanner cmd = new Scanner(System.in);
                 msg = cmd.nextLine();
                 byte[] m = msg.getBytes();

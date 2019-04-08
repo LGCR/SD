@@ -5,7 +5,7 @@ DAINF/UTFPR
 Ministério da Educação
 UNIVERSIDADE TECNOLÓGICA FEDERAL DO
 PARANÁ
-Campus Curitiba^
+Campus Curitiba
 ```
 Disciplina: Sistemas Distribuídos
 Professora: Ana Cristina Barreiras Kochem Vendramin
@@ -43,15 +43,15 @@ permita a sincronização de relógios físicos através do algoritmo de Berkele
     introduziria mais incerteza devido ao tempo de transmissão do pacote, o
     mestre envia um ajuste para que cada escravo adiante ou atrase seu
     relógio. Ao receber o ajuste do mestre, os processos escravos devem
-
+    atualizar seus relógios físicos. Toda comunicação deve ser unicast
+    (valor 0, 7 ).
 
 Profa. Ana Cristina Barreiras Kochem Vendramin
 DAINF/UTFPR
 
-```
-atualizar seus relógios físicos. Toda comunicação deve ser unicast
-(valor 0, 7 ).
-```
+
+
+
 5. O sistema deve evitar que um processo mal-intencionado assuma o
     papel de mestre e introduza valores incorretos no sistema. Para isso, a
     cada envio de ajuste de relógio, é necessário empregar chaves

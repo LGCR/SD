@@ -1,83 +1,143 @@
 package Sockets.Controller;
 
-import Sockets.MasterAtivo;
+import Sockets.Model.PacoteMensagem;
 import Sockets.Model.Processo;
+import Sockets.Model.ProcessoDAO;
+import Sockets.Util.ConversorJSON;
 import Sockets.Util.EncriptaDecripta;
-import Sockets.VerificaMaster;
-import Sockets.View.Grid;
+import Sockets.View.Tela;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.SocketException;
-import java.util.Timer;
-import java.util.UUID;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.security.KeyPair;
+import java.security.PublicKey;
 
-public class Controle extends Thread {
-    public final ControleMulticast controleMulticast;
-    public String id;
-    public VerificaMaster verificaMaster;
+public class Controle {
+    public ControleMulticast controleMulticast;
     public ControleUnicast controleUnicast;
+    public RelogioVirtual relogioVirtual;
+    public Tela tela;
+    public ProcessoDAO processos;
+
 
     //Esta é o contrutor da principal classe do processo, nele será intanciada e ativada todas as threads de processo
-    public Controle() throws IOException {
+    public Controle() {
 
-        //Aqui é instanciado a classe que irá lidar com a criptgaria de mensagens
-        EncriptaDecripta criptogafiaBib = new EncriptaDecripta();
+        //Essa linha instancia o disparador de mensagens do pronpt
+        this.tela = new Tela(this);
 
         //Instancia do relogio digital
-        RelogioDigital relogioDigital = new RelogioDigital(false, 100L);
+        relogioVirtual = new RelogioVirtual(false);
+        this.tela.adicionarLog("Instanciando relogio virtual");
 
         //Aqui será instanciado a classe de controle ControleMulticast
         this.controleMulticast = new ControleMulticast(this);
+        this.tela.adicionarLog("Instanciando controlador de multicasting");
 
         //Aqui será instanciado a classe que lidará com a comunicação unicast
         this.controleUnicast = new ControleUnicast(this);
-
-        //Essa linha de comando gera o ID unico deste processo
-        this.id = this.controleUnicast.getIP().getHostAddress() + "/" + this.controleUnicast.getPorta();
+        this.tela.adicionarLog("Instanciando controlador unicast");
 
 
-        verificaMaster();
-        imprimeGrid();
+        //Gera um par de chaves
+        KeyPair chaves = EncriptaDecripta.geraChave();
+
+        this.processos = new ProcessoDAO(
+                new Processo(
+                        this.controleUnicast.getIP().getHostAddress() + "/" + this.controleUnicast.getPorta(),
+                        this.controleUnicast.getIP(),
+                        this.controleUnicast.getPorta(),
+                        chaves.getPublic(),
+                        false
+                ), chaves.getPrivate()
+        );
+        this.tela.adicionarLog("Gerando chave privada");
+        this.tela.adicionarLog("Criando auto imagem do processo");
+
 
         //iniciando Threads
 
-        //iniciamdo thread do relógio digital
-        (new Timer()).schedule(relogioDigital, relogioDigital.getTaxaAtualizacao(), relogioDigital.getTaxaAtualizacao());
-
         //Iniciando listener multisoket
-        this.controleMulticast.run();
+        this.controleMulticast.start();
+        this.tela.adicionarLog("Iniciando listener Multicast");
 
         //Iniciando o listener unicast
-        this.controleUnicast.run();
+        this.controleUnicast.start();
+        this.tela.adicionarLog("Iniciando Listener Unicast");
+
+        this.enviarMensagensReconhecimento(PacoteMensagem.ENTRADA);
+        this.tela.adicionarLog("Enviando mensagem de entrada");
     }
 
-    public void masterAtivo() {
-        Timer timer = new Timer();
-        MasterAtivo masterAtivo = new MasterAtivo(id, this);
-        timer.schedule(masterAtivo, 1000, 1000);
+    //Essa função é destinada a enviar mensagens do tipo ENTRADA e EXISTENCIA
+    private void enviarMensagensReconhecimento(byte tipoMensagem) {
+
+        //chama a função para o envio de uma mensagem via multicast
+        this.controleMulticast.enviarMensagem(
+                //Converte o PacoteMensagem para um objeto JSON
+                ConversorJSON.converteModeloParaJson(
+                        //Cria um PacoteMensagem
+                        new PacoteMensagem(
+                                //ID do remetente
+                                this.processos.getEsteProcesso().getIdentificador(),
+                                //Tipo da mensagem
+                                tipoMensagem,
+                                //Envia a chave publica como mensagem
+                                (Object) this.processos.getEsteProcesso().getChavePublica()
+                        )
+                ).getBytes()
+        );
     }
 
-    private void verificaMaster() {
-        Timer timer = new Timer();
-        verificaMaster = new VerificaMaster(this, id);
-        timer.schedule(verificaMaster, 5000, 5000);
-    }
+    public final synchronized void tratadorMensagens(PacoteMensagem mensagem) {
+        if (!mensagem.getIdRemetente().equals(this.processos.getEsteProcesso().getIdentificador())) {
 
-    private void imprimeGrid() {
-        Grid grid = new Grid(this);
-        Timer gridTimer = new Timer();
-        gridTimer.schedule(grid, 1000, 5000);
-    }
-
-    @Override
-    public void run() {
-
-        while (!(this.controleMulticast.ultimaMensagem).equals("exit")) {
-
-            if ((this.controleMulticast.ultimaMensagem).equals("ola")) {
-                masterAtivo();
+            //Lida com o caso de chegar uma mensagem do tipo ENTRADA
+            if (mensagem.getTipoMensagem() == PacoteMensagem.ENTRADA) {
+                this.adicionarProcessoPacoteMensagem(mensagem);
+                this.enviarMensagensReconhecimento(PacoteMensagem.EXISTENCIA);
             }
+
+            //Lida com o caso de chegar uma mensagem do tipo EXISTENCIA
+            else if (mensagem.getTipoMensagem() == PacoteMensagem.EXISTENCIA) {
+                this.adicionarProcessoPacoteMensagem(mensagem);
+
+            } else if (mensagem.getTipoMensagem() == PacoteMensagem.DISPONIVEL) {
+
+            } else if (mensagem.getTipoMensagem() == PacoteMensagem.REQUISICAO_TEMPO) {
+
+            } else if (mensagem.getTipoMensagem() == PacoteMensagem.RESPOSTA_TEMPO) {
+
+            } else if (mensagem.getTipoMensagem() == PacoteMensagem.AJUSTE_TEMPO) {
+
+            } else {
+                this.tela.adicionarLog("Chegou uma mensagem não tratavel de " + mensagem.getIdRemetente());
+                return;
+            }
+
+        } else {
+            return;
         }
     }
+
+    //Adicionar um novo processo a partir de uma mensagem
+    private void adicionarProcessoPacoteMensagem(PacoteMensagem mensagem) {
+        try {
+            this.processos.adicionarProcesso(
+                    new Processo(
+                            mensagem.getIdRemetente(),
+                            InetAddress.getByName(mensagem.getIdRemetente().split("/")[0]),
+                            Integer.parseInt(mensagem.getIdRemetente().split("/")[1]),
+                            (PublicKey) mensagem.getMensagem(),
+                            false
+                    )
+            );
+            this.tela.adicionarLog("Novo processo de ID: " + mensagem.getIdRemetente());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            this.tela.adicionarLog("Falha ao adicionar processo de id: " + mensagem.getIdRemetente());
+        }
+    }
+
+
 }
