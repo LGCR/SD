@@ -70,6 +70,7 @@ public class Processo implements Comparable {
 
     @Override
     public int compareTo(Object o) {
-        return 0;
+        Processo compara = (Processo) o;
+        return this.getIdentificador().compareTo(compara.getIdentificador());
     }
 }

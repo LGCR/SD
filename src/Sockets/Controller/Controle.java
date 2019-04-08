@@ -1,5 +1,6 @@
 package Sockets.Controller;
 
+import Sockets.Controller.Disparadores.VerificaMestre;
 import Sockets.Model.Mensagem.Mensagem;
 import Sockets.Model.PacoteMensagem;
 import Sockets.Model.Processo;
@@ -19,6 +20,8 @@ public class Controle {
     public RelogioVirtual relogioVirtual;
     public Tela tela;
     public ProcessoDAO processos;
+    public VerificaMestre verificaMestre;
+    private final Long DeltaTempo = 500L;
 
 
     //Esta é o contrutor da principal classe do processo, nele será intanciada e ativada todas as threads de processo
@@ -68,6 +71,9 @@ public class Controle {
 
         //iniciando tela
         new Timer().schedule(this.tela, 1L, 1000L);
+
+        //Iniciando verificador do mestre
+        this.verificaMestre = new VerificaMestre(this, this.DeltaTempo);
 
         this.enviarMensagensReconhecimento(PacoteMensagem.ENTRADA);
         this.tela.adicionarLog("Enviando mensagem de entrada");

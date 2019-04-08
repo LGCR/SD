@@ -65,10 +65,10 @@ public class Tela extends TimerTask {
         this.impressaoLinhaAdaptavel("\t -> Lista de processos descobertos:");
         ArrayList<Processo> lista = this.controle.processos.getCopiaListaProcessos();
         for (int contador = 0; contador < lista.size(); contador++)
-            this.impressaoLinhaAdaptavel("Processo de ID: " + lista.get(contador).getIdentificador());
+            this.impressaoLinhaAdaptavel("Processo " + contador + ": " + lista.get(contador).getIdentificador());
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("\t -> Lista de logs:");
-        for (int contador = this.log.size() - 1; contador >= 0; contador--) {
+        for (int contador = 0; contador < this.log.size(); contador++) {
             this.impressaoLinhaAdaptavel(this.log.get(contador));
         }
         this.impressaoQuebraLinha();

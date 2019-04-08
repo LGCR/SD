@@ -11,6 +11,8 @@ public class ProcessoDAO {
     //Essa variável guarda a auto imagem deste processo
     private Processo esteProcesso;
 
+    private PrivateKey chavePrivada;
+
     //Define um marcador para adicionar um novo processo
     private static byte ADICIONAR = 0;
 
@@ -26,7 +28,7 @@ public class ProcessoDAO {
     public ProcessoDAO(Processo processo, PrivateKey chave) {
         this.listaProcessos = new ArrayList<>();
         this.esteProcesso = processo;
-        //Essa variável guarda a chave privada deste processo
+        this.chavePrivada = chave;
     }
 
     public int getNumeroProcessos() {
@@ -74,7 +76,7 @@ public class ProcessoDAO {
             this.listaProcessos.add((Processo) referencia);
             this.listaProcessos.sort(Processo::compareTo);
         } else if (comando == ProcessoDAO.REMOVER_MESTRE) {
-            for (int contador = 0; contador <= this.listaProcessos.size(); contador++) {
+            for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
                 if (this.listaProcessos.get(contador).getMaster()) {
                     this.listaProcessos.remove(contador);
                     continue;
