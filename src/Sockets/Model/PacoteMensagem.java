@@ -1,7 +1,6 @@
 package Sockets.Model;
 
 import Sockets.Model.Mensagem.Mensagem;
-import org.json.JSONObject;
 
 import java.io.*;
 

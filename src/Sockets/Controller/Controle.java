@@ -118,7 +118,7 @@ public class Controle {
                 this.adicionarProcessoPacoteMensagem(mensagem);
 
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.DISPONIVEL) {
-
+                this.verificaMestre.masterDisponivel();
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.REQUISICAO_TEMPO) {
 
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.RESPOSTA_TEMPO) {
