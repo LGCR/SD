@@ -1,7 +1,5 @@
 package Sockets.Model;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.security.PrivateKey;
 import java.util.ArrayList;
 
@@ -62,7 +60,7 @@ public class ProcessoDAO {
         return (ArrayList<Processo>) this.alteraListaProcessos(ProcessoDAO.COPIA_PROCESSOS, null);
     }
 
-    private synchronized Object alteraListaProcessos(@NotNull byte comando, Object referencia) {
+    private synchronized Object alteraListaProcessos(byte comando, Object referencia) {
 
         if (comando == ProcessoDAO.RETORNA_MESTRE) {
             if (this.listaProcessos.size() == 0)

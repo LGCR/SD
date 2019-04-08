@@ -1,17 +1,15 @@
 package Sockets.Model;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.net.InetAddress;
-import java.security.Key;
 import java.security.PublicKey;
 
-public class Processo implements Comparable{
+public class Processo implements Comparable {
     private String identificador;
     private InetAddress endereco;
     private int porta;
     private PublicKey chavePublica;
     private Boolean master;
+    private Long segundos;
 
     public Processo(String identificador, InetAddress endereco, int porta, PublicKey chavePublica, Boolean master) {
         this.identificador = identificador;
@@ -19,6 +17,15 @@ public class Processo implements Comparable{
         this.porta = porta;
         this.chavePublica = chavePublica;
         this.master = master;
+        this.segundos = null;
+    }
+
+    public Long getSegundos() {
+        return segundos;
+    }
+
+    public void setSegundos(Long segundos) {
+        this.segundos = segundos;
     }
 
     public String getIdentificador() {
@@ -62,7 +69,7 @@ public class Processo implements Comparable{
     }
 
     @Override
-    public int compareTo(@NotNull Object o) {
+    public int compareTo(Object o) {
         return 0;
     }
 }

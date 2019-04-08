@@ -60,7 +60,7 @@ public class EncriptaDecripta {
         final KeyPairGenerator keyGen;
         try {
             keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(2048);
+            keyGen.initialize(1024);
             return keyGen.generateKeyPair();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

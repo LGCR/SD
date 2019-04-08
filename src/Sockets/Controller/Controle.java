@@ -1,16 +1,17 @@
 package Sockets.Controller;
 
+import Sockets.Model.Mensagem.Mensagem;
 import Sockets.Model.PacoteMensagem;
 import Sockets.Model.Processo;
 import Sockets.Model.ProcessoDAO;
-import Sockets.Util.ConversorJSON;
 import Sockets.Util.EncriptaDecripta;
 import Sockets.View.Tela;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyPair;
-import java.security.PublicKey;
+import java.util.Timer;
 
 public class Controle {
     public ControleMulticast controleMulticast;
@@ -65,6 +66,9 @@ public class Controle {
         this.controleUnicast.start();
         this.tela.adicionarLog("Iniciando Listener Unicast");
 
+        //iniciando tela
+        new Timer().schedule(this.tela, 1L, 1000L);
+
         this.enviarMensagensReconhecimento(PacoteMensagem.ENTRADA);
         this.tela.adicionarLog("Enviando mensagem de entrada");
     }
@@ -73,20 +77,25 @@ public class Controle {
     private void enviarMensagensReconhecimento(byte tipoMensagem) {
 
         //chama a função para o envio de uma mensagem via multicast
-        this.controleMulticast.enviarMensagem(
-                //Converte o PacoteMensagem para um objeto JSON
-                ConversorJSON.converteModeloParaJson(
-                        //Cria um PacoteMensagem
-                        new PacoteMensagem(
-                                //ID do remetente
-                                this.processos.getEsteProcesso().getIdentificador(),
-                                //Tipo da mensagem
-                                tipoMensagem,
-                                //Envia a chave publica como mensagem
-                                (Object) this.processos.getEsteProcesso().getChavePublica()
-                        )
-                ).getBytes()
-        );
+        try {
+            this.controleMulticast.enviarMensagem(
+                    //Converte o PacoteMensagem para um objeto JSON
+                    PacoteMensagem.convertePacoteMensagemParaArrayBytes(
+                            //Cria um PacoteMensagem
+                            new PacoteMensagem(
+                                    //ID do remetente
+                                    this.processos.getEsteProcesso().getIdentificador(),
+                                    //Tipo da mensagem
+                                    tipoMensagem,
+                                    //Envia a chave publica como mensagem
+                                    new Mensagem(this.processos.getEsteProcesso().getChavePublica())
+                            )
+                    )
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+            this.tela.adicionarLog("Falha ao enviar mensagem multicast");
+        }
     }
 
     public final synchronized void tratadorMensagens(PacoteMensagem mensagem) {
@@ -110,14 +119,15 @@ public class Controle {
 
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.AJUSTE_TEMPO) {
 
-            } else {
+            }
+            else{
                 this.tela.adicionarLog("Chegou uma mensagem não tratavel de " + mensagem.getIdRemetente());
-                return;
             }
 
         } else {
-            return;
+            this.tela.adicionarLog("Ignorando mensagem de " + mensagem.getIdRemetente());
         }
+
     }
 
     //Adicionar um novo processo a partir de uma mensagem
@@ -128,7 +138,7 @@ public class Controle {
                             mensagem.getIdRemetente(),
                             InetAddress.getByName(mensagem.getIdRemetente().split("/")[0]),
                             Integer.parseInt(mensagem.getIdRemetente().split("/")[1]),
-                            (PublicKey) mensagem.getMensagem(),
+                            mensagem.getMensagem().getChavePublica(),
                             false
                     )
             );
@@ -137,6 +147,8 @@ public class Controle {
             e.printStackTrace();
             this.tela.adicionarLog("Falha ao adicionar processo de id: " + mensagem.getIdRemetente());
         }
+
+
     }
 
 

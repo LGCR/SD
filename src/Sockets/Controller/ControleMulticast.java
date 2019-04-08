@@ -1,7 +1,6 @@
 package Sockets.Controller;
 
-import Sockets.Util.ConversorJSON;
-import org.json.JSONObject;
+import Sockets.Model.PacoteMensagem;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -94,7 +93,7 @@ public class ControleMulticast extends Thread {
             //Aqui será instanciado o datagrama para recebimento de mensagens multicasta com 0.5 MB de buffer
             DatagramPacket mensagemRecebida = new DatagramPacket(new byte[500000], 500000);
 
-            //Aquui está o listener bloqueante que escutara o socket controleMulticast
+            //Aqui está o listener bloqueante que escutara o socket controleMulticast
             try {
                 this.multicastSocket.receive(mensagemRecebida);
             } catch (IOException e) {
@@ -104,16 +103,18 @@ public class ControleMulticast extends Thread {
             }
 
             //Chama a função de tratamento de mensagem na controler
-            this.controle.tratadorMensagens(
-                    //converte um objeto JSON para PacoteMensagem
-                    ConversorJSON.converteJsonParaModelo(
-                            //Cria uma String a partir de um array de bytes
-                            new JSONObject(
-                                    //Retorna o array de bytes recebido
-                                    new String(mensagemRecebida.getData())
-                            )
-                    )
-            );
+            try {
+                this.controle.tratadorMensagens(
+                        //converte o array de dados para o tipo PacoteMensagem
+                        PacoteMensagem.converteArrayBytesParaPacoteMensagem(mensagemRecebida.getData())
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+                this.controle.tela.adicionarLog("Falha ao receber mensagem multicast");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                this.controle.tela.adicionarLog("Falha ao receber mensagem multicast");
+            }
         }
     }
 }

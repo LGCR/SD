@@ -22,9 +22,6 @@ public class Tela extends TimerTask {
 
         //instancia do log
         this.log = new ArrayList<>();
-
-        //iniciando tela
-        new Timer().schedule(this, 1000L, 1000L);
     }
 
     //adiciona e controla o tamanho do log
@@ -42,7 +39,7 @@ public class Tela extends TimerTask {
         if (mensagem.length() <= tamanho)
             System.out.print(mensagem);
         else
-            System.out.print(mensagem.substring(0, tamanho));
+            System.out.print(mensagem.substring(0, tamanho + 1));
         for (int contador = 0; contador <= tamanho - mensagem.length(); contador++)
             System.out.print(" ");
         System.out.println(" |");

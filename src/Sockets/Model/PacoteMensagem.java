@@ -1,14 +1,16 @@
 package Sockets.Model;
 
-import org.jetbrains.annotations.Contract;
+import Sockets.Model.Mensagem.Mensagem;
 import org.json.JSONObject;
 
-public class PacoteMensagem {
+import java.io.*;
+
+public class PacoteMensagem implements Serializable {
 
     //Essa clase contém a definição da estrutura do pacote de mensagens que será trocada pelos processos
     private String idRemetente;
     private byte tipoMensagem;
-    private Object mensagem;
+    private Mensagem mensagem;
 
 
     //definição dos tipos de mensagem possíveis
@@ -32,17 +34,17 @@ public class PacoteMensagem {
     public static final byte AJUSTE_TEMPO = 5;
 
 
-    public PacoteMensagem(String idRemetente, byte tipoMensagem, Object mensagem) {
+    public PacoteMensagem(String idRemetente, byte tipoMensagem, Mensagem mensagem) {
         this.idRemetente = idRemetente;
         this.tipoMensagem = tipoMensagem;
         this.mensagem = mensagem;
     }
 
-    public Object getMensagem() {
-        return mensagem;
+    public Mensagem getMensagem() {
+        return this.mensagem;
     }
 
-    public void setMensagem(Object mensagem) {
+    public void setMensagem(Mensagem mensagem) {
         this.mensagem = mensagem;
     }
 
@@ -61,4 +63,18 @@ public class PacoteMensagem {
     public void setTipoMensagem(byte tipoMensagem) {
         this.tipoMensagem = tipoMensagem;
     }
+
+    public static PacoteMensagem converteArrayBytesParaPacoteMensagem(byte[] array) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream input = new ByteArrayInputStream(array);
+        ObjectInputStream objectInput = new ObjectInputStream(input);
+        return  (PacoteMensagem) objectInput.readObject();
+    }
+
+    public static byte[] convertePacoteMensagemParaArrayBytes( PacoteMensagem pacote) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutput = new ObjectOutputStream(output);
+        objectOutput.writeObject(pacote);
+        return output.toByteArray();
+    }
+
 }
