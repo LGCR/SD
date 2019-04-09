@@ -17,9 +17,9 @@ public class RelogioVirtual extends TimerTask {
         Date dataSistema = new Date(System.currentTimeMillis());
         this.segundos = dataSistema.getHours() * 3600L + dataSistema.getMinutes() * 60L + dataSistema.getSeconds();
 
-        //caso o parâmetro passado pelo construtor o rellógio digital irá iniciar com um valor aleatório entre +60 e -60 segundo
+        //caso o parâmetro passado pelo construtor o rellógio digital irá iniciar com um valor aleatório entre +600 e -600 segundo
         if (aleatoriedade) {
-            this.segundos += (new Random()).nextInt() % 120 - 120;
+            this.segundos += (new Random()).nextInt() % 1200 - 600;
         }
 
         //Inicia a thred de horario
