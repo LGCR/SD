@@ -23,7 +23,7 @@ public class Controle {
     public ProcessoDAO processos;
     public VerificaMestre verificaMestre;
     public DisponibilizaMestre dispobibilzaMestre;
-    private final Long DeltaTempo = 500L;
+    private final Long DeltaTempo = 1000L;
 
 
     //Esta é o contrutor da principal classe do processo, nele será intanciada e ativada todas as threads de processo
@@ -136,6 +136,7 @@ public class Controle {
             }
 
         } else {
+            if (mensagem.getTipoMensagem() != PacoteMensagem.DISPONIVEL)
             this.tela.adicionarLog("Ignorando mensagem de " + mensagem.getIdRemetente());
         }
 

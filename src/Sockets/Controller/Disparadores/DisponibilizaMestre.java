@@ -17,7 +17,7 @@ public class DisponibilizaMestre extends TimerTask {
 
     public DisponibilizaMestre(Controle controle, Long deltaTempo) {
         this.controle = controle;
-        Timer disparador = new Timer();
+        this.disparador = new Timer();
         this.deltaTempo = deltaTempo;
     }
 

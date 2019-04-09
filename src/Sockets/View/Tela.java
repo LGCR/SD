@@ -4,7 +4,6 @@ import Sockets.Controller.Controle;
 import Sockets.Model.Processo;
 
 import java.util.ArrayList;
-import java.util.Timer;
 import java.util.TimerTask;
 
 public class Tela extends TimerTask {
@@ -60,7 +59,10 @@ public class Tela extends TimerTask {
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("MEU ID: " + this.controle.processos.getEsteProcesso().getIdentificador());
         this.impressaoLinhaAdaptavel("Horário: " + this.controle.relogioVirtual.getHorario());
-        this.impressaoLinhaAdaptavel("Sou Mestre?: " + this.controle.processos.getEsteProcesso().getMaster());
+        if (this.controle.processos.getEsteProcesso().getMaster())
+            this.impressaoLinhaAdaptavel("Meu mestre: EU MESMO");
+        else
+            this.impressaoLinhaAdaptavel("Meu mestre: " + this.controle.processos.getMestre().getIdentificador());
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("\t -> Lista de processos descobertos:");
         ArrayList<Processo> lista = this.controle.processos.getCopiaListaProcessos();
