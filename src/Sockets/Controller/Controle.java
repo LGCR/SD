@@ -1,5 +1,6 @@
 package Sockets.Controller;
 
+import Sockets.Controller.Disparadores.CorrigeTempo;
 import Sockets.Controller.Disparadores.DisponibilizaMestre;
 import Sockets.Controller.Disparadores.VerificaMestre;
 import Sockets.Model.Mensagem.Mensagem;
@@ -23,6 +24,7 @@ public class Controle {
     public ProcessoDAO processos;
     public VerificaMestre verificaMestre;
     public DisponibilizaMestre dispobibilzaMestre;
+    public CorrigeTempo corretorTempo;
     private final Long DeltaTempo = 1000L;
 
 
@@ -59,6 +61,9 @@ public class Controle {
         );
         this.tela.adicionarLog("Gerando chave privada");
         this.tela.adicionarLog("Criando auto imagem do processo");
+
+        this.corretorTempo = new CorrigeTempo(this, this.DeltaTempo);
+        this.tela.adicionarLog("Instanciando controlador de tempo dos escravos");
 
 
         //iniciando Threads
@@ -132,11 +137,42 @@ public class Controle {
                 }
 
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.REQUISICAO_TEMPO) {
+                if (mensagem.getIdRemetente().equals(this.processos.getMestre().getIdentificador())) {
+                    try {
+                        this.controleUnicast.enviarMensagem(
 
-            } else if (mensagem.getTipoMensagem() == PacoteMensagem.RESPOSTA_TEMPO) {
+                                PacoteMensagem.convertePacoteMensagemParaArrayBytes(
+                                        new PacoteMensagem(
+                                                this.processos.getEsteProcesso().getIdentificador(),
+                                                PacoteMensagem.RESPOSTA_TEMPO,
+                                                new Mensagem(this.relogioVirtual.getTempo())
+                                        )
 
-            } else if (mensagem.getTipoMensagem() == PacoteMensagem.AJUSTE_TEMPO) {
+                                ), this.processos.getMestre().getEndereco(), this.processos.getMestre().getPorta()
+                        );
+                        this.tela.adicionarLog("Enviando tempo para o mestre");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        this.tela.adicionarLog("Falha ao enviar tempo para o mestre");
+                    }
 
+                } else {
+                    this.tela.adicionarLog("Ignorando falso mestre: " + mensagem.getIdRemetente());
+                }
+            } else if (mensagem.getTipoMensagem() == PacoteMensagem.RESPOSTA_TEMPO && this.corretorTempo.getRecebeTempo()) {
+                if (this.processos.idExistente(mensagem.getIdRemetente())) {
+                    int index = this.processos.getIndexPorID(mensagem.getIdRemetente());
+                    this.processos.setMomentoChegada(index, this.relogioVirtual.getTempo());
+                    this.processos.setTempo(index, mensagem.getMensagem().getTempo());
+                    this.tela.adicionarLog("Reebendo tempo de " + mensagem.getIdRemetente());
+
+                } else {
+                    this.tela.adicionarLog("Resposta de escravo desconhecido: " + mensagem.getIdRemetente());
+                }
+
+            } else if (mensagem.getTipoMensagem() == PacoteMensagem.AJUSTE_TEMPO && this.processos.getMestre() != null && this.processos.getMestre().getIdentificador().equals(mensagem.getIdRemetente())) {
+                this.relogioVirtual.somarTempo(mensagem.getMensagem().getTempo());
+                this.tela.adicionarLog("Ajustando relogio em " + mensagem.getMensagem().getTempo() + " segundos");
             } else {
                 this.tela.adicionarLog("Chegou uma mensagem não tratavel de " + mensagem.getIdRemetente());
             }
@@ -170,7 +206,14 @@ public class Controle {
             e.printStackTrace();
             this.tela.adicionarLog("Falha ao adicionar processo de id: " + mensagem.getIdRemetente());
         }
+    }
 
+    //Esta função torna o próprio processo um mestre
+    public void virarMestre() {
+        this.dispobibilzaMestre.disponibilizarMestre();
+        this.tela.adicionarLog("Iniciando disparador de mestre disponivel");
+        this.corretorTempo.iniciarCorretor();
+        this.tela.adicionarLog("Iniciando controlador de escravos");
 
     }
 

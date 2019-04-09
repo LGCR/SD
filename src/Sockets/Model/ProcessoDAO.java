@@ -27,6 +27,40 @@ public class ProcessoDAO {
         return this.listaProcessos.size();
     }
 
+    public Processo getProcessoEspecifico(int index) {
+        if (index < this.getNumeroProcessos()) {
+            return this.listaProcessos.get(index);
+        } else {
+            return null;
+        }
+    }
+
+    public void setTempo(int index, int segundos) {
+        if (index >= this.getNumeroProcessos())
+            return;
+        this.listaProcessos.get(index).setTempo(segundos);
+    }
+
+    public void setMomentoEnvio(int index, int segundos) {
+        if (index >= this.getNumeroProcessos())
+            return;
+        this.listaProcessos.get(index).setMomentoEnvio(segundos);
+    }
+
+    public void setMomentoChegada(int index, int segundos) {
+        if (index >= this.getNumeroProcessos())
+            return;
+        this.listaProcessos.get(index).setMomentoChegada(segundos);
+    }
+
+    public int getIndexPorID(String id) {
+        for (int contador = 0; contador < this.getNumeroProcessos(); contador++)
+            if (this.listaProcessos.get(contador).getIdentificador().equals(id))
+                return contador;
+
+        return -1;
+    }
+
     public Processo getMestre() {
         if (this.esteProcesso.getMaster()) {
             return esteProcesso;
@@ -76,10 +110,6 @@ public class ProcessoDAO {
 
     public Processo getEsteProcesso() {
         return this.esteProcesso;
-    }
-
-    public ArrayList<Processo> getCopiaListaProcessos() {
-        return this.listaProcessos;
     }
 
     public void setMestre(String idMestre) {

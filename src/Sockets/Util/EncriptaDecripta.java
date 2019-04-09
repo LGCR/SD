@@ -15,14 +15,14 @@ public class EncriptaDecripta {
     /**
      * Criptografa o texto puro usando chave pública.
      */
-    public static byte[] criptografa(String texto, PublicKey chave) {
+    public static byte[] criptografa(byte[] texto, PublicKey chave) {
         byte[] cipherText = null;
 
         try {
             final Cipher cipher = Cipher.getInstance("RSA");
             // Criptografa o texto puro usando a chave Púlica
             cipher.init(Cipher.ENCRYPT_MODE, chave);
-            cipherText = cipher.doFinal(texto.getBytes());
+            cipherText = cipher.doFinal(texto);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -33,7 +33,7 @@ public class EncriptaDecripta {
     /**
      * Decriptografa o texto puro usando chave privada.
      */
-    public static String decriptografa(byte[] texto, PrivateKey chave) {
+    public static byte[] decriptografa(byte[] texto, PrivateKey chave) {
         byte[] dectyptedText;
 
         try {
@@ -48,7 +48,7 @@ public class EncriptaDecripta {
         }
 
         assert dectyptedText != null;
-        return new String(dectyptedText);
+        return dectyptedText;
     }
 
     /**

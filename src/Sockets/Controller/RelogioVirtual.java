@@ -52,7 +52,7 @@ public class RelogioVirtual extends TimerTask {
 
 
     //função realizar soma na variável de tempo, serve para realizar ajustes e incrementar o tempo
-    private synchronized void somarTempo(int segundos) {
+    public synchronized void somarTempo(int segundos) {
         this.segundos += segundos;
         if (this.segundos >= 86400)
             this.segundos += -86400 * (this.segundos/86400);

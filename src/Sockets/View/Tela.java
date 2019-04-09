@@ -59,15 +59,15 @@ public class Tela extends TimerTask {
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("MEU ID: " + this.controle.processos.getEsteProcesso().getIdentificador());
         this.impressaoLinhaAdaptavel("Horário: " + this.controle.relogioVirtual.getHorario());
+        this.impressaoLinhaAdaptavel("Segundos absolutos: " + this.controle.relogioVirtual.getTempo());
         if (this.controle.processos.getEsteProcesso().getMaster())
             this.impressaoLinhaAdaptavel("Meu mestre: EU MESMO");
         else if (this.controle.processos.getMestre() != null)
             this.impressaoLinhaAdaptavel("Meu mestre: " + this.controle.processos.getMestre().getIdentificador());
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("\t -> Lista de processos descobertos:");
-        ArrayList<Processo> lista = this.controle.processos.getCopiaListaProcessos();
-        for (int contador = 0; contador < lista.size(); contador++)
-            this.impressaoLinhaAdaptavel("Processo " + contador + ": " + lista.get(contador).getIdentificador());
+        for (int contador = 0; contador < this.controle.processos.getNumeroProcessos(); contador++)
+            this.impressaoLinhaAdaptavel("Processo " + contador + ": " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("\t -> Lista de logs:");
         for (int contador = 0; contador < this.log.size(); contador++) {

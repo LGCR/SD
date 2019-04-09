@@ -9,7 +9,9 @@ public class Processo implements Comparable {
     private int porta;
     private PublicKey chavePublica;
     private Boolean master;
-    private Long segundos;
+    private int tempo;
+    private int momentoEnvio;
+    private int momentoChegada;
 
     public Processo(String identificador, InetAddress endereco, int porta, PublicKey chavePublica, Boolean master) {
         this.identificador = identificador;
@@ -17,15 +19,33 @@ public class Processo implements Comparable {
         this.porta = porta;
         this.chavePublica = chavePublica;
         this.master = master;
-        this.segundos = null;
+        this.tempo = -1;
+        this.momentoChegada = -1;
+        this.momentoEnvio = -1;
     }
 
-    public Long getSegundos() {
-        return segundos;
+    public int getTempo() {
+        return tempo;
     }
 
-    public void setSegundos(Long segundos) {
-        this.segundos = segundos;
+    public void setTempo(int tempo) {
+        this.tempo = tempo;
+    }
+
+    public int getMomentoEnvio() {
+        return momentoEnvio;
+    }
+
+    public void setMomentoEnvio(int momentoEnvio) {
+        this.momentoEnvio = momentoEnvio;
+    }
+
+    public int getMomentoChegada() {
+        return momentoChegada;
+    }
+
+    public void setMomentoChegada(int momentoChegada) {
+        this.momentoChegada = momentoChegada;
     }
 
     public String getIdentificador() {

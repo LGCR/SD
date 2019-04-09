@@ -1,15 +1,17 @@
 package Sockets.Model.Mensagem;
 
-import java.io.Serializable;
+import Sockets.Model.PacoteMensagem;
+
+import java.io.*;
 import java.security.PublicKey;
 
 public class Mensagem implements Serializable {
 
-    private Long diferencaTempo;
+    private int tempo;
     private PublicKey chavePublica;
 
-    public Mensagem(Long diferencaTempo) {
-        this.diferencaTempo = diferencaTempo;
+    public Mensagem(int tempo) {
+        this.tempo = tempo;
     }
 
     public Mensagem(PublicKey chavePublica) {
@@ -24,11 +26,24 @@ public class Mensagem implements Serializable {
         this.chavePublica = chavePublica;
     }
 
-    public Long getDiferencaTempo() {
-        return diferencaTempo;
+    public int getTempo() {
+        return tempo;
     }
 
-    public void setDiferencaTempo(Long diferencaTempo) {
-        this.diferencaTempo = diferencaTempo;
+    public void setTempo(int tempo) {
+        this.tempo = tempo;
+    }
+
+    public static Mensagem converteArrayBytesParaMensagem(byte[] array) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream input = new ByteArrayInputStream(array);
+        ObjectInputStream objectInput = new ObjectInputStream(input);
+        return  (Mensagem) objectInput.readObject();
+    }
+
+    public static byte[] converteMensagemParaArrayBytes( Mensagem pacote) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ObjectOutputStream objectOutput = new ObjectOutputStream(output);
+        objectOutput.writeObject(pacote);
+        return output.toByteArray();
     }
 }

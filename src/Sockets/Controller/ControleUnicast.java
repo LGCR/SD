@@ -1,5 +1,7 @@
 package Sockets.Controller;
 
+import Sockets.Model.PacoteMensagem;
+
 import java.io.IOException;
 import java.net.*;
 
@@ -7,9 +9,12 @@ public class ControleUnicast extends Thread {
 
     private DatagramSocket unicastSocket;
 
+    private Controle controle;
+
     public ControleUnicast(Controle controle) {
 
         //Aqui é feito a injeção de dependencia da classe controle
+        this.controle = controle;
 
         //O sistema operacional irá definir um porta livre para o socket
         try {
@@ -48,7 +53,7 @@ public class ControleUnicast extends Thread {
     @Override
     public void run() {
 
-    //garante que a threa não morra
+        //garante que a threa não morra
         while (true) {
 
             //instancia o datagrama com 0.5MB de buffer
@@ -60,6 +65,25 @@ public class ControleUnicast extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            try {
+                this.controle.tratadorMensagens(
+                        PacoteMensagem.converteArrayBytesParaPacoteMensagem(
+
+                                mensagemRecebida.getData()
+
+
+                        )
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+                this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");
+            }
+
+
         }
     }
 }

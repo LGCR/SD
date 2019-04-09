@@ -43,7 +43,7 @@ public class VerificaMestre extends TimerTask {
             this.controle.processos.novoMestre();
 
             if (this.controle.processos.getEsteProcesso().getMaster()){
-                this.controle.dispobibilzaMestre.disponibilizarMestre();
+                this.controle.virarMestre();
                 this.controle.tela.adicionarLog("Eu sou o novo mestre");
                 this.disparador.cancel();
                 this.disparador.purge();
