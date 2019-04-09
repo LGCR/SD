@@ -61,7 +61,7 @@ public class Tela extends TimerTask {
         this.impressaoLinhaAdaptavel("Horário: " + this.controle.relogioVirtual.getHorario());
         if (this.controle.processos.getEsteProcesso().getMaster())
             this.impressaoLinhaAdaptavel("Meu mestre: EU MESMO");
-        else
+        else if (this.controle.processos.getMestre() != null)
             this.impressaoLinhaAdaptavel("Meu mestre: " + this.controle.processos.getMestre().getIdentificador());
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("\t -> Lista de processos descobertos:");

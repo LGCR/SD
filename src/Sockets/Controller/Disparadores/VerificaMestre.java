@@ -39,14 +39,16 @@ public class VerificaMestre extends TimerTask {
     public void run() {
         //Isso verifica se o mestre esta atrasado, ou seja, não se comunicou no periodo deltaTempo
         if (this.masterAtrasado) {
-            this.controle.processos.novoMestre();
             this.controle.tela.adicionarLog("Mestre foi morto por estar atrasado");
+            this.controle.processos.novoMestre();
+
             if (this.controle.processos.getEsteProcesso().getMaster()){
                 this.controle.dispobibilzaMestre.disponibilizarMestre();
                 this.controle.tela.adicionarLog("Eu sou o novo mestre");
                 this.disparador.cancel();
                 this.disparador.purge();
-            }
+            } else
+                this.controle.tela.adicionarLog("Novo mestre selecionado");
 
         } else {
             this.masterAtrasado = true;

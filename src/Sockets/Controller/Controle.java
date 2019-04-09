@@ -122,7 +122,9 @@ public class Controle {
             else if (mensagem.getTipoMensagem() == PacoteMensagem.EXISTENCIA) {
                 this.adicionarProcessoPacoteMensagem(mensagem);
 
-            } else if (mensagem.getTipoMensagem() == PacoteMensagem.DISPONIVEL) {
+            } else if (mensagem.getTipoMensagem() == PacoteMensagem.DISPONIVEL &&
+                    this.processos.getMestre() != null &&
+                    this.processos.getMestre().getIdentificador().equals(mensagem.getIdRemetente())) {
                 this.verificaMestre.masterDisponivel();
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.REQUISICAO_TEMPO) {
 
@@ -130,14 +132,13 @@ public class Controle {
 
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.AJUSTE_TEMPO) {
 
-            }
-            else{
+            } else {
                 this.tela.adicionarLog("Chegou uma mensagem não tratavel de " + mensagem.getIdRemetente());
             }
 
         } else {
             if (mensagem.getTipoMensagem() != PacoteMensagem.DISPONIVEL)
-            this.tela.adicionarLog("Ignorando mensagem de " + mensagem.getIdRemetente());
+                this.tela.adicionarLog("Ignorando mensagem de " + mensagem.getIdRemetente());
         }
 
     }

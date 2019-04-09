@@ -67,7 +67,7 @@ public class ProcessoDAO {
         if (comando == ProcessoDAO.RETORNA_MESTRE) {
             if (this.listaProcessos.size() == 0)
                 return null;
-            for (int contador = 0; contador <= this.listaProcessos.size(); contador++) {
+            for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
                 if (this.listaProcessos.get(contador).getMaster())
                     return this.listaProcessos.get(contador);
             }
