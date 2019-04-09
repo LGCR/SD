@@ -13,22 +13,14 @@ public class ProcessoDAO {
 
     private PrivateKey chavePrivada;
 
-    //Define um marcador para adicionar um novo processo
-    private static byte ADICIONAR = 0;
-
-    //Mata o mestre existente e seleciona um novo mestre
-    private static byte REMOVER_MESTRE = 1;
-
-    //Retorna o proesso atualmente marcado como mestre
-    private static byte RETORNA_MESTRE = 2;
-
-    //Retorna uma copia da lista de processos
-    private static byte COPIA_PROCESSOS = 3;
-
     public ProcessoDAO(Processo processo, PrivateKey chave) {
         this.listaProcessos = new ArrayList<>();
         this.esteProcesso = processo;
         this.chavePrivada = chave;
+    }
+
+    public PrivateKey getChavePrivada() {
+        return chavePrivada;
     }
 
     public int getNumeroProcessos() {
@@ -39,32 +31,6 @@ public class ProcessoDAO {
         if (this.esteProcesso.getMaster()) {
             return esteProcesso;
         } else {
-            Object retorno = this.alteraListaProcessos(ProcessoDAO.RETORNA_MESTRE, null);
-            if (retorno == null)
-                return null;
-            return (Processo) retorno;
-        }
-    }
-
-    public void novoMestre() {
-        this.alteraListaProcessos(ProcessoDAO.REMOVER_MESTRE, null);
-    }
-
-    public void adicionarProcesso(Processo processo) {
-        this.alteraListaProcessos(ProcessoDAO.ADICIONAR, processo);
-    }
-
-    public Processo getEsteProcesso() {
-        return this.esteProcesso;
-    }
-
-    public ArrayList<Processo> getCopiaListaProcessos() {
-        return (ArrayList<Processo>) this.alteraListaProcessos(ProcessoDAO.COPIA_PROCESSOS, null);
-    }
-
-    private synchronized Object alteraListaProcessos(byte comando, Object referencia) {
-
-        if (comando == ProcessoDAO.RETORNA_MESTRE) {
             if (this.listaProcessos.size() == 0)
                 return null;
             for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
@@ -72,28 +38,71 @@ public class ProcessoDAO {
                     return this.listaProcessos.get(contador);
             }
             return null;
-        } else if (comando == ProcessoDAO.ADICIONAR) {
-            this.listaProcessos.add((Processo) referencia);
-            this.listaProcessos.sort(Processo::compareTo);
-        } else if (comando == ProcessoDAO.REMOVER_MESTRE) {
+        }
+    }
+
+    public void novoMestre() {
+        for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
+            if (this.listaProcessos.get(contador).getMaster()) {
+                this.listaProcessos.remove(contador);
+                continue;
+            }
+        }
+
+        if (this.listaProcessos.size() == 0 || esteProcesso.compareTo(this.listaProcessos.get(0)) < 0) {
+            this.esteProcesso.setMaster(true);
+        } else {
+            this.listaProcessos.get(0).setMaster(true);
+        }
+    }
+
+    public Boolean adicionarProcesso(Processo processo) {
+        if (this.idExistente(processo.getIdentificador())) {
+            if (this.esteProcesso.getIdentificador().equals(processo.getIdentificador())) {
+                this.esteProcesso.setChavePublica(processo.getChavePublica());
+                return false;
+            }
             for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
-                if (this.listaProcessos.get(contador).getMaster()) {
-                    this.listaProcessos.remove(contador);
-                    continue;
+                if (this.listaProcessos.get(contador).getIdentificador().equals(processo.getIdentificador())) {
+                    this.listaProcessos.get(contador).setChavePublica(processo.getChavePublica());
+                    return false;
                 }
             }
-
-            if (this.listaProcessos.size() == 0 || esteProcesso.compareTo(this.listaProcessos.get(0)) > 0) {
-                this.esteProcesso.setMaster(true);
-            } else {
-                this.listaProcessos.get(0).setMaster(true);
-            }
-        } else if (comando == ProcessoDAO.COPIA_PROCESSOS) {
-            ArrayList<Processo> retorno = new ArrayList<>();
-            for (int contador = 0; contador < this.listaProcessos.size(); contador++)
-                retorno.add(this.listaProcessos.get(contador));
-            return retorno;
         }
-        return null;
+        this.listaProcessos.add(processo);
+        this.listaProcessos.sort(Processo::compareTo);
+        return true;
     }
+
+    public Processo getEsteProcesso() {
+        return this.esteProcesso;
+    }
+
+    public ArrayList<Processo> getCopiaListaProcessos() {
+        return this.listaProcessos;
+    }
+
+    public void setMestre(String idMestre) {
+        if (this.esteProcesso.getIdentificador().equals(idMestre))
+            this.esteProcesso.setMaster(true);
+        else {
+            this.esteProcesso.setMaster(false);
+            for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
+                if (this.listaProcessos.get(contador).getIdentificador().equals(idMestre))
+                    this.listaProcessos.get(contador).setMaster(true);
+                else
+                    this.listaProcessos.get(contador).setMaster(false);
+            }
+        }
+    }
+
+    public Boolean idExistente(String id) {
+        if (this.esteProcesso.getIdentificador().equals(id))
+            return true;
+        for (int contador = 0; contador < this.listaProcessos.size(); contador++)
+            if (this.listaProcessos.get(contador).getIdentificador().equals(id))
+                return true;
+        return false;
+    }
+
 }

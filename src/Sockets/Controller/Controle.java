@@ -33,7 +33,7 @@ public class Controle {
         this.tela = new Tela(this);
 
         //Instancia do relogio digital
-        relogioVirtual = new RelogioVirtual(false);
+        relogioVirtual = new RelogioVirtual(true);
         this.tela.adicionarLog("Instanciando relogio virtual");
 
         //Aqui será instanciado a classe de controle ControleMulticast
@@ -122,10 +122,15 @@ public class Controle {
             else if (mensagem.getTipoMensagem() == PacoteMensagem.EXISTENCIA) {
                 this.adicionarProcessoPacoteMensagem(mensagem);
 
-            } else if (mensagem.getTipoMensagem() == PacoteMensagem.DISPONIVEL &&
-                    this.processos.getMestre() != null &&
-                    this.processos.getMestre().getIdentificador().equals(mensagem.getIdRemetente())) {
-                this.verificaMestre.masterDisponivel();
+            } else if (mensagem.getTipoMensagem() == PacoteMensagem.DISPONIVEL) {
+                if (this.processos.getMestre() != null && this.processos.getMestre().getIdentificador().equals(mensagem.getIdRemetente())) {
+                    this.verificaMestre.masterDisponivel();
+                } else if (this.processos.getMestre() == null) {
+                    this.processos.setMestre(mensagem.getIdRemetente());
+                } else {
+                    this.tela.adicionarLog("Ignorando falso mestre: " + mensagem.getIdRemetente());
+                }
+
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.REQUISICAO_TEMPO) {
 
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.RESPOSTA_TEMPO) {
@@ -146,16 +151,21 @@ public class Controle {
     //Adicionar um novo processo a partir de uma mensagem
     private void adicionarProcessoPacoteMensagem(PacoteMensagem mensagem) {
         try {
-            this.processos.adicionarProcesso(
-                    new Processo(
-                            mensagem.getIdRemetente(),
-                            InetAddress.getByName(mensagem.getIdRemetente().split("/")[0]),
-                            Integer.parseInt(mensagem.getIdRemetente().split("/")[1]),
-                            mensagem.getMensagem().getChavePublica(),
-                            false
+            if (this.processos.adicionarProcesso
+                    (new Processo(
+                                    mensagem.getIdRemetente(),
+                                    InetAddress.getByName(mensagem.getIdRemetente().split("/")[0]),
+                                    Integer.parseInt(mensagem.getIdRemetente().split("/")[1]),
+                                    mensagem.getMensagem().getChavePublica(),
+                                    false
+                            )
                     )
-            );
-            this.tela.adicionarLog("Novo processo de ID: " + mensagem.getIdRemetente());
+            ) {
+                this.tela.adicionarLog("Novo processo de ID: " + mensagem.getIdRemetente());
+            } else {
+                this.tela.adicionarLog("Processo " + mensagem.getIdRemetente() + " já existe");
+            }
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
             this.tela.adicionarLog("Falha ao adicionar processo de id: " + mensagem.getIdRemetente());
