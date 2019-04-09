@@ -41,55 +41,64 @@ public class CorrigeTempo extends TimerTask {
         if (this.recebeTempo) {
             this.recebeTempo = false;
 
-            int numeroEscravos = 0;
-            int somaSegundos = 0;
+            Long numeroEscravos = 0L;
+            Long somaSegundos = 0L;
 
             for (int contador = 0; contador < this.controle.processos.getNumeroProcessos(); contador++) {
-                if (this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() != -1 &&
-                        this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio() != -1 &&
-                        this.controle.processos.getProcessoEspecifico(contador).getTempo() != -1) {
+                if (this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() != null &&
+                        this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio() != null &&
+                        this.controle.processos.getProcessoEspecifico(contador).getTempo() != null) {
                     numeroEscravos++;
-                    somaSegundos += this.controle.processos.getProcessoEspecifico(contador).getTempo() + (this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()) / 2;
+                    somaSegundos += this.controle.processos.getProcessoEspecifico(contador).getTempo() + ((this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()) / 2);
+
                 }
             }
 
             numeroEscravos++;
             somaSegundos += this.controle.relogioVirtual.getTempo();
 
-            int mediaTempo = somaSegundos / numeroEscravos;
+            Long mediaTempo = somaSegundos / numeroEscravos;
+
 
             //Ajustando o próprio mestre
-            this.controle.relogioVirtual.somarTempo(this.controle.relogioVirtual.getTempo() - mediaTempo);
+            this.controle.relogioVirtual.somarTempo((this.controle.relogioVirtual.getTempo() - mediaTempo) * -1L);
             this.controle.tela.adicionarLog("Auto ajuste de " + (this.controle.relogioVirtual.getTempo() - mediaTempo) + " segundos");
 
             for (int contador = 0; contador < this.controle.processos.getNumeroProcessos(); contador++) {
-                try {
-                    this.controle.controleUnicast.enviarMensagem(
-                            PacoteMensagem.convertePacoteMensagemParaArrayBytes(
-                                    new PacoteMensagem(
-                                            this.controle.processos.getEsteProcesso().getIdentificador(),
-                                            PacoteMensagem.AJUSTE_TEMPO,
-                                            new Mensagem(
-                                                    (this.controle.processos.getProcessoEspecifico(contador).getTempo() + (this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()) / 2) - mediaTempo)
-                                    )
-                            ), this.controle.processos.getProcessoEspecifico(contador).getEndereco(),
-                            this.controle.processos.getProcessoEspecifico(contador).getPorta()
-                    );
-                    this.controle.tela.adicionarLog("Enviando ajuste de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    this.controle.tela.adicionarLog("Falha no envio de ajuste para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
-                }
+                if (this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() != null &&
+                        this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio() != null &&
+                        this.controle.processos.getProcessoEspecifico(contador).getTempo() != null) {
+                    try {
 
+                        this.controle.controleUnicast.enviarMensagem(
+                                PacoteMensagem.convertePacoteMensagemParaArrayBytes(
+                                        new PacoteMensagem(
+                                                this.controle.processos.getEsteProcesso().getIdentificador(),
+                                                PacoteMensagem.AJUSTE_TEMPO,
+                                                new Mensagem(
+                                                        ((this.controle.processos.getProcessoEspecifico(contador).getTempo() + (this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()) / 2) - mediaTempo) * -1L
+                                                )
+                                        )
+                                ), this.controle.processos.getProcessoEspecifico(contador).getEndereco(),
+                                this.controle.processos.getProcessoEspecifico(contador).getPorta()
+                        );
+
+
+                        this.controle.tela.adicionarLog("Enviando ajuste de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        this.controle.tela.adicionarLog("Falha no envio de ajuste para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
+                    }
+                }
             }
         }
         //Quando o mestre não tiver recebendo tempo, ele deve zerar todas as variáveis relacionadas a estas medidas e mandar a requisição para seus escravos
         else {
 
             for (int contador = 0; contador < this.controle.processos.getNumeroProcessos(); contador++) {
-                this.controle.processos.setMomentoChegada(contador, -1);
-                this.controle.processos.setMomentoEnvio(contador, -1);
-                this.controle.processos.setTempo(contador, -1);
+                this.controle.processos.setMomentoChegada(contador, null);
+                this.controle.processos.setMomentoEnvio(contador, null);
+                this.controle.processos.setTempo(contador, null);
             }
 
             //Agora será enviado uma mensagem para cada escravo via unicast
@@ -113,7 +122,7 @@ public class CorrigeTempo extends TimerTask {
                     e.printStackTrace();
                     this.controle.tela.adicionarLog("Falha requisição tempo: " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
                 }
-                this.controle.processos.setMomentoEnvio(contador, this.controle.relogioVirtual.getSegundos());
+                this.controle.processos.setMomentoEnvio(contador, this.controle.relogioVirtual.getTempo());
             }
             this.controle.tela.adicionarLog("Requisições de tempo enviadas");
         }

@@ -1,6 +1,7 @@
 package Sockets.Controller.Disparadores;
 
 import Sockets.Controller.Controle;
+import Sockets.Model.Mensagem.Mensagem;
 import Sockets.Model.PacoteMensagem;
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class DisponibilizaMestre extends TimerTask {
     }
 
     public void disponibilizarMestre() {
-        this.disparador.schedule(this, 1L, this.deltaTempo / 2);
+        this.disparador.schedule(this, 1L, this.deltaTempo / 4);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class DisponibilizaMestre extends TimerTask {
                                 new PacoteMensagem(
                                         this.controle.processos.getEsteProcesso().getIdentificador(),
                                         PacoteMensagem.DISPONIVEL,
-                                        null
+                                        new Mensagem(this.controle.processos.getEsteProcesso().getChavePublica())
                                 )
                         )
                 );

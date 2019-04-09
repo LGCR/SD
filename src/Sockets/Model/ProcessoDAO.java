@@ -35,19 +35,19 @@ public class ProcessoDAO {
         }
     }
 
-    public void setTempo(int index, int segundos) {
+    public void setTempo(int index, Long segundos) {
         if (index >= this.getNumeroProcessos())
             return;
         this.listaProcessos.get(index).setTempo(segundos);
     }
 
-    public void setMomentoEnvio(int index, int segundos) {
+    public void setMomentoEnvio(int index, Long segundos) {
         if (index >= this.getNumeroProcessos())
             return;
         this.listaProcessos.get(index).setMomentoEnvio(segundos);
     }
 
-    public void setMomentoChegada(int index, int segundos) {
+    public void setMomentoChegada(int index, Long segundos) {
         if (index >= this.getNumeroProcessos())
             return;
         this.listaProcessos.get(index).setMomentoChegada(segundos);

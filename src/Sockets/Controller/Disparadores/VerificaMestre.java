@@ -32,7 +32,7 @@ public class VerificaMestre extends TimerTask {
     }
 
     //Essa função indica que o master se comunicou com o processo
-    public void masterDisponivel() {
+    public void mestreDisponivel() {
         this.masterAtrasado = false;
     }
 

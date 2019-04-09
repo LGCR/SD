@@ -62,10 +62,6 @@ public class Controle {
         this.tela.adicionarLog("Gerando chave privada");
         this.tela.adicionarLog("Criando auto imagem do processo");
 
-        this.corretorTempo = new CorrigeTempo(this, this.DeltaTempo);
-        this.tela.adicionarLog("Instanciando controlador de tempo dos escravos");
-
-
         //iniciando Threads
 
         //Iniciando listener multisoket
@@ -78,6 +74,9 @@ public class Controle {
 
         //iniciando tela
         new Timer().schedule(this.tela, 1L, 1000L);
+
+        this.corretorTempo = new CorrigeTempo(this, this.DeltaTempo);
+        this.tela.adicionarLog("Instanciando controlador de tempo dos escravos");
 
         //Inicia disponibilizador do mestre
         this.dispobibilzaMestre = new DisponibilizaMestre(this, this.DeltaTempo);
@@ -129,8 +128,11 @@ public class Controle {
 
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.DISPONIVEL) {
                 if (this.processos.getMestre() != null && this.processos.getMestre().getIdentificador().equals(mensagem.getIdRemetente())) {
-                    this.verificaMestre.masterDisponivel();
+                    this.verificaMestre.mestreDisponivel();
                 } else if (this.processos.getMestre() == null) {
+                    if(!this.processos.idExistente(mensagem.getIdRemetente())) {
+                        this.adicionarProcessoPacoteMensagem(mensagem);
+                    }
                     this.processos.setMestre(mensagem.getIdRemetente());
                 } else {
                     this.tela.adicionarLog("Ignorando falso mestre: " + mensagem.getIdRemetente());
@@ -164,7 +166,7 @@ public class Controle {
                     int index = this.processos.getIndexPorID(mensagem.getIdRemetente());
                     this.processos.setMomentoChegada(index, this.relogioVirtual.getTempo());
                     this.processos.setTempo(index, mensagem.getMensagem().getTempo());
-                    this.tela.adicionarLog("Reebendo tempo de " + mensagem.getIdRemetente());
+                    this.tela.adicionarLog("Recebendo tempo de " + mensagem.getIdRemetente());
 
                 } else {
                     this.tela.adicionarLog("Resposta de escravo desconhecido: " + mensagem.getIdRemetente());

@@ -7,10 +7,10 @@ import java.security.PublicKey;
 
 public class Mensagem implements Serializable {
 
-    private int tempo;
+    private Long tempo;
     private PublicKey chavePublica;
 
-    public Mensagem(int tempo) {
+    public Mensagem(Long tempo) {
         this.tempo = tempo;
     }
 
@@ -26,11 +26,11 @@ public class Mensagem implements Serializable {
         this.chavePublica = chavePublica;
     }
 
-    public int getTempo() {
+    public Long getTempo() {
         return tempo;
     }
 
-    public void setTempo(int tempo) {
+    public void setTempo(Long tempo) {
         this.tempo = tempo;
     }
 
