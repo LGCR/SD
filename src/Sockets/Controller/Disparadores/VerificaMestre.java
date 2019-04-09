@@ -15,8 +15,6 @@ public class VerificaMestre extends TimerTask {
 
     private Boolean masterAtrasado;
 
-    private MestreAtivo mestreAtivo;
-
     public VerificaMestre(Controle controle, Long deltaTempo) {
         this.controle = controle;
 
@@ -45,8 +43,8 @@ public class VerificaMestre extends TimerTask {
             this.controle.processos.novoMestre();
             this.controle.tela.adicionarLog("Mestre foi morto por estar atrasado");
             if (this.controle.processos.getEsteProcesso().getMaster()){
-                this.disparador.cancel();
-                mestreAtivo = new MestreAtivo(controle);
+                this.disparador.
+                this.controle.dispobibilzaMestre.disponibilizarMestre();
                 this.controle.tela.adicionarLog("Eu sou o novo mestre");
             }
 

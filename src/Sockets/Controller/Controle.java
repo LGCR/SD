@@ -1,5 +1,6 @@
 package Sockets.Controller;
 
+import Sockets.Controller.Disparadores.DisponibilizaMestre;
 import Sockets.Controller.Disparadores.VerificaMestre;
 import Sockets.Model.Mensagem.Mensagem;
 import Sockets.Model.PacoteMensagem;
@@ -21,6 +22,7 @@ public class Controle {
     public Tela tela;
     public ProcessoDAO processos;
     public VerificaMestre verificaMestre;
+    public DisponibilizaMestre dispobibilzaMestre;
     private final Long DeltaTempo = 500L;
 
 
@@ -71,6 +73,9 @@ public class Controle {
 
         //iniciando tela
         new Timer().schedule(this.tela, 1L, 1000L);
+
+        //Inicia disponibilizador do mestre
+        this.dispobibilzaMestre = new DisponibilizaMestre(this, this.DeltaTempo);
 
         //Iniciando verificador do mestre
         this.verificaMestre = new VerificaMestre(this, this.DeltaTempo);
