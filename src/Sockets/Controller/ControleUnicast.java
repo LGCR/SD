@@ -1,9 +1,12 @@
 package Sockets.Controller;
 
 import Sockets.Model.PacoteMensagem;
+import Sockets.Util.EncriptaDecripta;
 
 import java.io.IOException;
 import java.net.*;
+import java.security.Signature;
+import java.security.SignatureException;
 
 public class ControleUnicast extends Thread {
 
@@ -41,13 +44,18 @@ public class ControleUnicast extends Thread {
 
     public synchronized void enviarMensagem(byte[] mensagem, InetAddress endereco, int porta) {
 
+        Signature mensagemAssinada = EncriptaDecripta.assina(mensagem,this.controle.processos.getChavePrivada());
+
         //Essa fução encapsula a mensagem e envia para a porta e endereço passado como parâmetro
         try {
-            this.unicastSocket.send(new DatagramPacket(mensagem, mensagem.length, endereco, porta));
+            this.unicastSocket.send(new DatagramPacket(mensagemAssinada.sign(), mensagem.length, endereco, porta));
+            return;
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Erro ao enviar mensagem");
+        } catch (SignatureException e) {
+            e.printStackTrace();
         }
+        System.out.println("Erro ao enviar mensagem");
     }
 
     @Override
@@ -67,23 +75,23 @@ public class ControleUnicast extends Thread {
             }
 
             try {
+
+
+
                 this.controle.tratadorMensagens(
                         PacoteMensagem.converteArrayBytesParaPacoteMensagem(
-
                                 mensagemRecebida.getData()
-
-
                         )
                 );
+
+                continue;
             } catch (IOException e) {
                 e.printStackTrace();
-                this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-                this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");
+
             }
-
-
+            this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");
         }
     }
 }

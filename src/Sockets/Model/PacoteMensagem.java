@@ -3,6 +3,7 @@ package Sockets.Model;
 import Sockets.Model.Mensagem.Mensagem;
 
 import java.io.*;
+import java.security.Signature;
 
 public class PacoteMensagem implements Serializable {
 
@@ -10,6 +11,7 @@ public class PacoteMensagem implements Serializable {
     private String idRemetente;
     private byte tipoMensagem;
     private Mensagem mensagem;
+    private Signature assinatura;
 
 
     //definição dos tipos de mensagem possíveis
@@ -37,6 +39,22 @@ public class PacoteMensagem implements Serializable {
         this.idRemetente = idRemetente;
         this.tipoMensagem = tipoMensagem;
         this.mensagem = mensagem;
+        this.assinatura = null;
+    }
+
+    public PacoteMensagem(String idRemetente, byte tipoMensagem, Mensagem mensagem, Signature assinatura) {
+        this.idRemetente = idRemetente;
+        this.tipoMensagem = tipoMensagem;
+        this.mensagem = mensagem;
+        this.assinatura = assinatura;
+    }
+
+    public Signature getAssinatura() {
+        return assinatura;
+    }
+
+    public void setAssinatura(Signature assinatura) {
+        this.assinatura = assinatura;
     }
 
     public Mensagem getMensagem() {

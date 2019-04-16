@@ -45,8 +45,6 @@ public class Controle {
         //Aqui será instanciado a classe que lidará com a comunicação unicast
         this.controleUnicast = new ControleUnicast(this);
         this.tela.adicionarLog("Instanciando controlador unicast");
-
-
         //Gera um par de chaves
         KeyPair chaves = EncriptaDecripta.geraChave();
 

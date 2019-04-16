@@ -13,7 +13,7 @@ public class EncriptaDecripta {
 
 
     /**
-     * Criptografa o texto puro usando chave pública.
+     * Criptografa o texto puro usando chave privada.
      */
     public static Signature assina(byte[] texto, PrivateKey chave) {
         Signature signature = null;
@@ -31,7 +31,7 @@ public class EncriptaDecripta {
     }
 
     /**
-     * Decriptografa o texto puro usando chave privada.
+     * Decriptografa o texto puro usando chave publica.
      */
     public static boolean verificaAssinatura(byte[] texto, PublicKey chave, Signature sig) {
         Signature signature;
