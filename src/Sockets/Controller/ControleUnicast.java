@@ -1,9 +1,14 @@
 package Sockets.Controller;
 
 import Sockets.Model.PacoteMensagem;
+import Sockets.Model.Processo;
+import Sockets.Util.EncriptaDecripta;
 
 import java.io.IOException;
 import java.net.*;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 
 public class ControleUnicast extends Thread {
 
@@ -43,8 +48,10 @@ public class ControleUnicast extends Thread {
 
         //Essa fução encapsula a mensagem e envia para a porta e endereço passado como parâmetro
         try {
-            this.unicastSocket.send(new DatagramPacket(mensagem, mensagem.length, endereco, porta));
-        } catch (IOException e) {
+            Signature signature = EncriptaDecripta.assina(mensagem, controle.processos.getChavePrivada());
+            byte []sig = signature.sign();
+            this.unicastSocket.send(new DatagramPacket(sig, sig.length, endereco, porta));
+        } catch (IOException | SignatureException e) {
             e.printStackTrace();
             System.out.println("Erro ao enviar mensagem");
         }
@@ -67,14 +74,26 @@ public class ControleUnicast extends Thread {
             }
 
             try {
-                this.controle.tratadorMensagens(
-                        PacoteMensagem.converteArrayBytesParaPacoteMensagem(
+                byte []sig = mensagemRecebida.getData();
+                PublicKey publicKey = null;
+                for (int i = 0; i < controle.processos.getNumeroProcessos(); i++){
+                    Processo processo = controle.processos.getProcessoEspecifico(i);
+                    if (EncriptaDecripta.verificaAssinatura(sig, processo.getChavePublica())){
+                        publicKey = processo.getChavePublica();
+                    }
+                }
 
-                                mensagemRecebida.getData()
+                if (EncriptaDecripta.verificaAssinatura(sig, publicKey)){
+
+                    this.controle.tratadorMensagens(
+                            PacoteMensagem.converteArrayBytesParaPacoteMensagem(
+
+                                    sig
 
 
-                        )
-                );
+                            )
+                    );
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");

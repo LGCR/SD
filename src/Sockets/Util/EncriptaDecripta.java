@@ -33,15 +33,15 @@ public class EncriptaDecripta {
     /**
      * Decriptografa o texto puro usando chave privada.
      */
-    public static boolean verificaAssinatura(byte[] texto, PublicKey chave, Signature sig) {
+    public static boolean verificaAssinatura(byte[] sig, PublicKey chave) {
         Signature signature;
         boolean compativel = false;
 
         try {
             signature = Signature.getInstance("SHA512withDSA");
             signature.initVerify(chave);
-            signature.update(texto);
-            compativel = signature.verify(sig.sign());
+            signature.update(sig);
+            compativel = signature.verify(sig);
 
         } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException ex) {
             System.out.println("Erro ao verificar mensagem");
