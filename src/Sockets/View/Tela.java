@@ -9,7 +9,7 @@ public class Tela extends TimerTask {
     private Controle controle;
 
     //essa variável guarda o tamanho da tela a ser apresentada
-    private static byte tamanho = 50;
+    private static byte tamanho = 80;
 
     //essa variávell guarda as ultimas mensagens do processo
     private ArrayList<String> log;

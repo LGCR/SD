@@ -140,18 +140,19 @@ public class Controle {
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.REQUISICAO_TEMPO) {
                 if (mensagem.getIdRemetente().equals(this.processos.getMestre().getIdentificador())) {
                     try {
-                        if (
-                                this.controleUnicast.enviarMensagem(
-                                        new PacoteMensagem(
-                                                this.processos.getEsteProcesso().getIdentificador(),
-                                                PacoteMensagem.RESPOSTA_TEMPO,
-                                                new Mensagem(this.relogioVirtual.getTempo())
-                                        ),
-                                        this.processos.getMestre().getEndereco(), this.processos.getMestre().getPorta()
-                                )
-                        ) {
-                            this.tela.adicionarLog("Enviando tempo para o mestre");
-                        }
+
+                        this.controleUnicast.enviarMensagem(
+                                new PacoteMensagem(
+                                        this.processos.getEsteProcesso().getIdentificador(),
+                                        PacoteMensagem.RESPOSTA_TEMPO,
+                                        new Mensagem(this.relogioVirtual.getTempo())
+                                ),
+                                this.processos.getMestre().getEndereco(), this.processos.getMestre().getPorta()
+                        );
+
+                        this.tela.adicionarLog("Enviando tempo para o mestre");
+                        return;
+
                     } catch (IOException | SignatureException e) {
                         this.tela.adicionarLog("Falha ao enviar tempo para o mestre");
                         e.printStackTrace();

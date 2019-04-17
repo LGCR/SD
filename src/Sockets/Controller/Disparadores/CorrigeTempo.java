@@ -71,27 +71,28 @@ public class CorrigeTempo extends TimerTask {
                         this.controle.processos.getProcessoEspecifico(contador).getTempo() != null) {
 
                     try {
-                        if (
-                                this.controle.controleUnicast.enviarMensagem(
-                                        new PacoteMensagem(
-                                                this.controle.processos.getEsteProcesso().getIdentificador(),
-                                                PacoteMensagem.AJUSTE_TEMPO,
-                                                new Mensagem(
-                                                        (
-                                                                (this.controle.processos.getProcessoEspecifico(contador).getTempo() +
-                                                                        (
-                                                                                this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()
-                                                                        ) / 2
-                                                                ) - mediaTempo
-                                                        ) * -1L
-                                                )
-                                        ),
-                                        this.controle.processos.getProcessoEspecifico(contador).getEndereco(),
-                                        this.controle.processos.getProcessoEspecifico(contador).getPorta()
-                                )
-                        ) {
-                            this.controle.tela.adicionarLog("Enviando ajuste de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
-                        }
+
+                        this.controle.controleUnicast.enviarMensagem(
+                                new PacoteMensagem(
+                                        this.controle.processos.getEsteProcesso().getIdentificador(),
+                                        PacoteMensagem.AJUSTE_TEMPO,
+                                        new Mensagem(
+                                                (
+                                                        (this.controle.processos.getProcessoEspecifico(contador).getTempo() +
+                                                                (
+                                                                        this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()
+                                                                ) / 2
+                                                        ) - mediaTempo
+                                                ) * -1L
+                                        )
+                                ),
+                                this.controle.processos.getProcessoEspecifico(contador).getEndereco(),
+                                this.controle.processos.getProcessoEspecifico(contador).getPorta()
+                        );
+
+                        this.controle.tela.adicionarLog("Enviando ajuste de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
+                        continue;
+
                     } catch (IOException | SignatureException e) {
                         this.controle.tela.adicionarLog("Falha ao enviar ajuste de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
                         e.printStackTrace();
@@ -114,23 +115,24 @@ public class CorrigeTempo extends TimerTask {
 
             for (int contador = 0; contador < this.controle.processos.getNumeroProcessos(); contador++) {
                 try {
-                    if (
-                            this.controle.controleUnicast.enviarMensagem(
-                                    new PacoteMensagem(
-                                            this.controle.processos.getEsteProcesso().getIdentificador(),
-                                            PacoteMensagem.REQUISICAO_TEMPO,
-                                            null
-                                    ),
-                                    this.controle.processos.getProcessoEspecifico(contador).getEndereco(),
-                                    this.controle.processos.getProcessoEspecifico(contador).getPorta()
-                            )
-                    ) {
-                        this.controle.processos.setMomentoEnvio(contador, this.controle.relogioVirtual.getTempo());
-                        this.controle.tela.adicionarLog("Enviando requisição de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
-                    }
+
+                    this.controle.controleUnicast.enviarMensagem(
+                            new PacoteMensagem(
+                                    this.controle.processos.getEsteProcesso().getIdentificador(),
+                                    PacoteMensagem.REQUISICAO_TEMPO,
+                                    null
+                            ),
+                            this.controle.processos.getProcessoEspecifico(contador).getEndereco(),
+                            this.controle.processos.getProcessoEspecifico(contador).getPorta()
+                    );
+
+                    this.controle.processos.setMomentoEnvio(contador, this.controle.relogioVirtual.getTempo());
+                    this.controle.tela.adicionarLog("Enviando requisição de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
+                    continue;
+
                 } catch (IOException | SignatureException e) {
-                    this.controle.tela.adicionarLog("Falha ao enviar requisição de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
                     e.printStackTrace();
+                    this.controle.tela.adicionarLog("Falha ao enviar requisição de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
                 }
                 this.controle.tela.adicionarLog("Falha ao enviar requisição de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
             }

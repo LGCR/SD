@@ -5,7 +5,6 @@ import Sockets.Util.EncriptaDecripta;
 
 import java.io.IOException;
 import java.net.*;
-import java.security.Signature;
 import java.security.SignatureException;
 
 public class ControleUnicast extends Thread {
@@ -42,7 +41,7 @@ public class ControleUnicast extends Thread {
         return this.unicastSocket.getLocalAddress();
     }
 
-    public synchronized Boolean enviarMensagem(PacoteMensagem pacote, InetAddress endereco, int porta) throws IOException, SignatureException {
+    public synchronized void enviarMensagem(PacoteMensagem pacote, InetAddress endereco, int porta) throws IOException, SignatureException {
 
         //Adiciona a assinatura no pacote
         pacote.setAssinatura(
@@ -57,14 +56,7 @@ public class ControleUnicast extends Thread {
 
 
         //Essa fução encapsula a mensagem e envia para a porta e endereço passado como parâmetro
-        try {
-            this.unicastSocket.send(new DatagramPacket(mensagem, mensagem.length, endereco, porta));
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Erro ao enviar mensagem");
-        return false;
+        this.unicastSocket.send(new DatagramPacket(mensagem, mensagem.length, endereco, porta));
     }
 
     @Override
