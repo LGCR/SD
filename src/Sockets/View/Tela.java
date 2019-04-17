@@ -1,6 +1,7 @@
 package Sockets.View;
 
 import Sockets.Controller.Controle;
+import Sockets.Controller.RelogioVirtual;
 
 import java.util.ArrayList;
 import java.util.TimerTask;
@@ -69,7 +70,14 @@ public class Tela extends TimerTask {
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("\t -> Lista de processos descobertos:");
         for (int contador = 0; contador < this.controle.processos.getNumeroProcessos(); contador++)
-            this.impressaoLinhaAdaptavel("Processo " + contador + ": " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
+            if (this.controle.processos.getMestre().getIdentificador().equals(
+                    this.controle.processos.getEsteProcesso().getIdentificador()
+            ) && this.controle.processos.getProcessoEspecifico(contador).getTempo() != null
+            ) {
+                this.impressaoLinhaAdaptavel("Processo " + contador + ": " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador() + " Relógio: " + RelogioVirtual.converteMilesegundosParaHorario(this.controle.processos.getProcessoEspecifico(contador).getTempo()));
+            } else {
+                this.impressaoLinhaAdaptavel("Processo " + contador + ": " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
+            }
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("\t -> Lista de logs:");
 

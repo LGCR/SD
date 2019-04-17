@@ -72,19 +72,21 @@ public class CorrigeTempo extends TimerTask {
 
                     try {
 
+                        Long ajusteTempo = (
+                                (this.controle.processos.getProcessoEspecifico(contador).getTempo() +
+                                        (
+                                                this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()
+                                        ) / 2
+                                ) - mediaTempo
+                        ) * -1L;
+
                         this.controle.controleUnicast.enviarMensagem(
                                 new PacoteMensagem(
                                         this.controle.processos.getEsteProcesso().getIdentificador(),
                                         PacoteMensagem.AJUSTE_TEMPO,
                                         Mensagem.converteMensagemParaArrayBytes(
                                                 new Mensagem(
-                                                        (
-                                                                (this.controle.processos.getProcessoEspecifico(contador).getTempo() +
-                                                                        (
-                                                                                this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()
-                                                                        ) / 2
-                                                                ) - mediaTempo
-                                                        ) * -1L
+                                                        ajusteTempo
                                                 )
                                         )
                                 ),
@@ -92,7 +94,7 @@ public class CorrigeTempo extends TimerTask {
                                 this.controle.processos.getProcessoEspecifico(contador).getPorta()
                         );
 
-                        this.controle.tela.adicionarLog("Enviando ajuste de tempo para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
+                        this.controle.tela.adicionarLog("Enviando ajuste de tempo de " + ajusteTempo + " segundos para " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
                         continue;
 
                     } catch (IOException | SignatureException e) {

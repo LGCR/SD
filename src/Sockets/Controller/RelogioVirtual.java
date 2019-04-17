@@ -47,7 +47,7 @@ public class RelogioVirtual extends TimerTask {
         return "" + this.getHoras() + ":" + this.getMinutos() + ":" + this.getSegundos();
     }
 
-    public Long getTempo(){
+    public Long getTempo() {
         return this.segundos;
     }
 
@@ -56,8 +56,19 @@ public class RelogioVirtual extends TimerTask {
     public synchronized void somarTempo(Long segundos) {
         this.segundos += segundos;
         if (this.segundos >= 86400L)
-            this.segundos += -86400L * (this.segundos/86400L);
+            this.segundos += -86400L * (this.segundos / 86400L);
 
+    }
+
+    public static String converteMilesegundosParaHorario(Long milesegundos) {
+        String horario = "";
+
+        horario += "" + milesegundos / 3600L + ":";
+        horario += "" + (milesegundos - (milesegundos / 3600L) * 3600L) / 60L + ":";
+        horario += "" + (milesegundos - ((milesegundos - (milesegundos / 3600L) * 3600L) / 60L) * 60L - ((milesegundos / 3600L) * 3600L));
+
+
+        return horario;
     }
 
     @Override
