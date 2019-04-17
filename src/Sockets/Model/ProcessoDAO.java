@@ -6,12 +6,12 @@ import java.util.ArrayList;
 public class ProcessoDAO {
 
     //Essa variável guarda a lista de processos descobertos até o momento
-    private ArrayList<Processo> listaProcessos;
+    private final ArrayList<Processo> listaProcessos;
 
     //Essa variável guarda a auto imagem deste processo
-    private Processo esteProcesso;
+    private final Processo esteProcesso;
 
-    private PrivateKey chavePrivada;
+    private final PrivateKey chavePrivada;
 
     public ProcessoDAO(Processo processo, PrivateKey chave) {
         this.listaProcessos = new ArrayList<>();
@@ -67,19 +67,19 @@ public class ProcessoDAO {
         } else {
             if (this.listaProcessos.size() == 0)
                 return null;
-            for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
-                if (this.listaProcessos.get(contador).getMaster())
-                    return this.listaProcessos.get(contador);
+            for (Processo listaProcesso : this.listaProcessos) {
+                if (listaProcesso.getMaster())
+                    return listaProcesso;
             }
             return null;
         }
     }
 
+    @SuppressWarnings("SuspiciousListRemoveInLoop")
     public void novoMestre() {
         for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
             if (this.listaProcessos.get(contador).getMaster()) {
                 this.listaProcessos.remove(contador);
-                continue;
             }
         }
 
@@ -97,11 +97,11 @@ public class ProcessoDAO {
                 this.esteProcesso.setChavePublica(processo.getChavePublica());
                 return false;
             }
-            for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
-                if (this.listaProcessos.get(contador).getIdentificador().equals(processo.getIdentificador()) &&
-                        this.listaProcessos.get(contador).getChavePublica() != processo.getChavePublica()
+            for (Processo listaProcesso : this.listaProcessos) {
+                if (listaProcesso.getIdentificador().equals(processo.getIdentificador()) &&
+                        listaProcesso.getChavePublica() != processo.getChavePublica()
                 ) {
-                    this.listaProcessos.get(contador).setChavePublica(processo.getChavePublica());
+                    listaProcesso.setChavePublica(processo.getChavePublica());
                     return false;
                 }
             }
@@ -120,11 +120,11 @@ public class ProcessoDAO {
             this.esteProcesso.setMaster(true);
         else {
             this.esteProcesso.setMaster(false);
-            for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
-                if (this.listaProcessos.get(contador).getIdentificador().equals(idMestre))
-                    this.listaProcessos.get(contador).setMaster(true);
+            for (Processo listaProcesso : this.listaProcessos) {
+                if (listaProcesso.getIdentificador().equals(idMestre))
+                    listaProcesso.setMaster(true);
                 else
-                    this.listaProcessos.get(contador).setMaster(false);
+                    listaProcesso.setMaster(false);
             }
         }
     }
@@ -132,8 +132,8 @@ public class ProcessoDAO {
     public Boolean idExistente(String id) {
         if (this.esteProcesso.getIdentificador().equals(id))
             return true;
-        for (int contador = 0; contador < this.listaProcessos.size(); contador++)
-            if (this.listaProcessos.get(contador).getIdentificador().equals(id))
+        for (Processo listaProcesso : this.listaProcessos)
+            if (listaProcesso.getIdentificador().equals(id))
                 return true;
         return false;
     }

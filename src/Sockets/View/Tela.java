@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.TimerTask;
 
 public class Tela extends TimerTask {
-    private Controle controle;
+    private final Controle controle;
 
     //essa variável guarda o tamanho da tela a ser apresentada
-    private static byte tamanho = 80;
+    private static final byte tamanho = 80;
 
     //essa variávell guarda as ultimas mensagens do processo
-    private ArrayList<String> log;
+    private final ArrayList<String> log;
 
     public Tela(Controle controle) {
         //injeção de dependencia
@@ -51,7 +51,7 @@ public class Tela extends TimerTask {
         for (byte contador = 0; contador <= tamanho + 4; contador++) {
             System.out.print("=");
         }
-        System.out.println("");
+        System.out.println();
     }
 
 
@@ -75,8 +75,8 @@ public class Tela extends TimerTask {
 
         //Adição de bloco de código syncronizado
         synchronized (this) {
-            for (int contador = 0; contador < this.log.size(); contador++) {
-                this.impressaoLinhaAdaptavel(this.log.get(contador));
+            for (String s : this.log) {
+                this.impressaoLinhaAdaptavel(s);
             }
         }
         this.impressaoQuebraLinha();

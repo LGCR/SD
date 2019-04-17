@@ -11,11 +11,11 @@ import java.util.TimerTask;
 
 public class CorrigeTempo extends TimerTask {
 
-    private Controle controle;
+    private final Controle controle;
 
-    private Long deltaTempo;
+    private final Long deltaTempo;
 
-    private Timer disparador;
+    private final Timer disparador;
 
     private Boolean recebeTempo;
 

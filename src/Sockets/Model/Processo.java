@@ -1,5 +1,7 @@
 package Sockets.Model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.net.InetAddress;
 import java.security.PublicKey;
 
@@ -89,7 +91,7 @@ public class Processo implements Comparable {
     }
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(@NotNull Object o) {
         Processo compara = (Processo) o;
         return this.getIdentificador().compareTo(compara.getIdentificador());
     }

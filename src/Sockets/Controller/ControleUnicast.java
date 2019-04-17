@@ -1,6 +1,5 @@
 package Sockets.Controller;
 
-import Sockets.Model.Mensagem.Mensagem;
 import Sockets.Model.PacoteMensagem;
 import Sockets.Util.EncriptaDecripta;
 
@@ -12,7 +11,7 @@ public class ControleUnicast extends Thread {
 
     private DatagramSocket unicastSocket;
 
-    private Controle controle;
+    private final Controle controle;
 
     public ControleUnicast(Controle controle) {
 
@@ -60,6 +59,7 @@ public class ControleUnicast extends Thread {
         this.unicastSocket.send(new DatagramPacket(mensagem, mensagem.length, endereco, porta));
     }
 
+    @SuppressWarnings("InfiniteLoopStatement")
     @Override
     public void run() {
 

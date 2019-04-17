@@ -12,21 +12,19 @@ import Sockets.View.Tela;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.SignatureException;
 import java.util.Timer;
 
 public class Controle {
-    public ControleMulticast controleMulticast;
-    public ControleUnicast controleUnicast;
-    public RelogioVirtual relogioVirtual;
-    public Tela tela;
-    public ProcessoDAO processos;
-    public VerificaMestre verificaMestre;
-    public DisponibilizaMestre dispobibilzaMestre;
-    public CorrigeTempo corretorTempo;
-    private final Long DeltaTempo = 1000L;
+    public final ControleMulticast controleMulticast;
+    public final ControleUnicast controleUnicast;
+    public final RelogioVirtual relogioVirtual;
+    public final Tela tela;
+    public final ProcessoDAO processos;
+    private final VerificaMestre verificaMestre;
+    private final DisponibilizaMestre dispobibilzaMestre;
+    private final CorrigeTempo corretorTempo;
 
 
     //Esta é o contrutor da principal classe do processo, nele será intanciada e ativada todas as threads de processo
@@ -74,14 +72,15 @@ public class Controle {
         //iniciando tela
         new Timer().schedule(this.tela, 1L, 1000L);
 
-        this.corretorTempo = new CorrigeTempo(this, this.DeltaTempo);
+        Long deltaTempo = 1000L;
+        this.corretorTempo = new CorrigeTempo(this, deltaTempo);
         this.tela.adicionarLog("Instanciando controlador de tempo dos escravos");
 
         //Inicia disponibilizador do mestre
-        this.dispobibilzaMestre = new DisponibilizaMestre(this, this.DeltaTempo);
+        this.dispobibilzaMestre = new DisponibilizaMestre(this, deltaTempo);
 
         //Iniciando verificador do mestre
-        this.verificaMestre = new VerificaMestre(this, this.DeltaTempo);
+        this.verificaMestre = new VerificaMestre(this, deltaTempo);
 
         this.enviarMensagensReconhecimento(PacoteMensagem.ENTRADA);
         this.tela.adicionarLog("Enviando mensagem de entrada");

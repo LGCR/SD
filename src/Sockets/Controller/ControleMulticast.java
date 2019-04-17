@@ -108,10 +108,7 @@ public class ControleMulticast extends Thread {
                         //converte o array de dados para o tipo PacoteMensagem
                         PacoteMensagem.converteArrayBytesParaPacoteMensagem(mensagemRecebida.getData())
                 );
-            } catch (IOException e) {
-                e.printStackTrace();
-                this.controle.tela.adicionarLog("Falha ao receber mensagem multicast");
-            } catch (ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
                 this.controle.tela.adicionarLog("Falha ao receber mensagem multicast");
             }

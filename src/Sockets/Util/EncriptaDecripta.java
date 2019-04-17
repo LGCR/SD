@@ -1,13 +1,6 @@
 package Sockets.Util;
 
-import Sockets.View.Tela;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import java.security.*;
-import java.util.stream.StreamSupport;
 
 public class EncriptaDecripta {
 

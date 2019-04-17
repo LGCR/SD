@@ -2,10 +2,8 @@ package Sockets;
 
 import Sockets.Controller.Controle;
 
-import java.io.IOException;
-
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         //ControleMulticast m = new ControleMulticast();
         //m.start();
         /*Timer timer = new Timer();

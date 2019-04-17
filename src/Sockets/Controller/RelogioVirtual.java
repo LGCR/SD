@@ -11,6 +11,7 @@ public class RelogioVirtual extends TimerTask {
     //variável que armazenará o tempo do relógio digital
     private Long segundos;
 
+    @SuppressWarnings("deprecation")
     public RelogioVirtual(Boolean aleatoriedade) {
 
         //Aqui iniciamos os segundos do relógio com o tempo atual do sistema
@@ -27,17 +28,17 @@ public class RelogioVirtual extends TimerTask {
     }
 
     //essa função retorna as horas
-    public Long getHoras() {
+    private Long getHoras() {
         return this.segundos / 3600L;
     }
 
     //essa função retorna os minutos
-    public Long getMinutos() {
+    private Long getMinutos() {
         return (this.segundos - (this.getHoras() * 3600L)) / 60L;
     }
 
     //essa função retorna os segundos
-    public Long getSegundos() {
+    private Long getSegundos() {
         return this.segundos - (this.getHoras() * 3600L) - (this.getMinutos() * 60L);
     }
 

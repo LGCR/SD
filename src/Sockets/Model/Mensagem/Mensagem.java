@@ -1,7 +1,5 @@
 package Sockets.Model.Mensagem;
 
-import Sockets.Model.PacoteMensagem;
-
 import java.io.*;
 import java.security.PublicKey;
 

@@ -10,11 +10,11 @@ import java.util.TimerTask;
 
 public class DisponibilizaMestre extends TimerTask {
 
-    private Controle controle;
+    private final Controle controle;
 
-    private Timer disparador;
+    private final Timer disparador;
 
-    private Long deltaTempo;
+    private final Long deltaTempo;
 
     public DisponibilizaMestre(Controle controle, Long deltaTempo) {
         this.controle = controle;
@@ -28,7 +28,7 @@ public class DisponibilizaMestre extends TimerTask {
 
     @Override
     public void run() {
-        Boolean erro = false;
+        boolean erro = false;
 
         do {
             try {

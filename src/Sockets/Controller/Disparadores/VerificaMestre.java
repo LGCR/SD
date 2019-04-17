@@ -8,10 +8,10 @@ import java.util.TimerTask;
 public class VerificaMestre extends TimerTask {
 
     //Variável para a injeção de dependencia
-    private Controle controle;
+    private final Controle controle;
 
     //Essa variável irá armazenar a tarefa a ser diparada de tempos em tempos
-    private Timer disparador;
+    private final Timer disparador;
 
     private Boolean masterAtrasado;
 
