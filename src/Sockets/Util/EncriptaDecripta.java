@@ -19,10 +19,10 @@ public class EncriptaDecripta {
         Signature signature = null;
 
         try {
-            signature = Signature.getInstance("SHA256withDSA");
+            signature = Signature.getInstance("SHA256withDSA", "SUN");
             signature.initSign(chave);
             signature.update(texto);
-            signature.sign();
+            //signature.sign();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,12 +38,12 @@ public class EncriptaDecripta {
         boolean compativel = false;
 
         try {
-            signature = Signature.getInstance("SHA256withDSA");
+            signature = Signature.getInstance("SHA256withDSA", "SUN");
             signature.initVerify(chavePublica);
             signature.update(dados);
             compativel = signature.verify(assinatura);
 
-        } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException ex) {
+        } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException | NoSuchProviderException ex) {
             System.out.println("Erro ao verificar mensagem");
         }
         return compativel;
@@ -57,10 +57,10 @@ public class EncriptaDecripta {
     public static KeyPair geraChave() {
         final KeyPairGenerator keyGen;
         try {
-            keyGen = KeyPairGenerator.getInstance("DSA");
+            keyGen = KeyPairGenerator.getInstance("DSA", "SUN");
             keyGen.initialize(2048);
             return keyGen.generateKeyPair();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             e.printStackTrace();
             System.out.println("Falha ao gerar par de chaves! Finalizando processo.");
             System.exit(1);
