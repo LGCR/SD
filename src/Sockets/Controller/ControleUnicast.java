@@ -1,5 +1,6 @@
 package Sockets.Controller;
 
+import Sockets.Model.Mensagem.Mensagem;
 import Sockets.Model.PacoteMensagem;
 import Sockets.Util.EncriptaDecripta;
 
@@ -44,9 +45,9 @@ public class ControleUnicast extends Thread {
     public synchronized void enviarMensagem(PacoteMensagem pacote, InetAddress endereco, int porta) throws IOException, SignatureException {
 
         //Adiciona a assinatura no pacote
-        pacote.setAssinatura(
+        pacote.setAssinaturaMensagem(
                 EncriptaDecripta.assina(
-                        PacoteMensagem.convertePacoteMensagemParaArrayBytes(pacote),
+                        pacote.getMensagem(),
                         this.controle.processos.getChavePrivada()
                 ).sign()
         );
@@ -66,7 +67,7 @@ public class ControleUnicast extends Thread {
         while (true) {
 
             //instancia o datagrama com 0.5MB de buffer
-            DatagramPacket mensagemRecebida = new DatagramPacket(new byte[1024], 1024);
+            DatagramPacket mensagemRecebida = new DatagramPacket(new byte[2048], 2048);
 
             //Litener bloqueante de leitura do socket
             try {
@@ -76,13 +77,13 @@ public class ControleUnicast extends Thread {
 
                 if (
                         EncriptaDecripta.verificaAssinatura(
-                                mensagemRecebida.getData(),
+                                mensagem.getMensagem(),
                                 this.controle.processos.getProcessoEspecifico(
                                         this.controle.processos.getIndexPorID(
                                                 mensagem.getIdRemetente()
                                         )
                                 ).getChavePublica(),
-                                mensagem.getAssinatura()
+                                mensagem.getAssinaturaMensagem()
                         )
                 ) {
                     this.controle.tratadorMensagens(mensagem);

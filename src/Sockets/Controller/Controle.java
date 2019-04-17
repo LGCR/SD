@@ -102,7 +102,11 @@ public class Controle {
                                     //Tipo da mensagem
                                     tipoMensagem,
                                     //Envia a chave publica como mensagem
-                                    new Mensagem(this.processos.getEsteProcesso().getChavePublica())
+                                    Mensagem.converteMensagemParaArrayBytes(
+                                            new Mensagem(
+                                                    this.processos.getEsteProcesso().getChavePublica()
+                                            )
+                                    )
                             )
                     )
             );
@@ -145,7 +149,11 @@ public class Controle {
                                 new PacoteMensagem(
                                         this.processos.getEsteProcesso().getIdentificador(),
                                         PacoteMensagem.RESPOSTA_TEMPO,
-                                        new Mensagem(this.relogioVirtual.getTempo())
+                                        Mensagem.converteMensagemParaArrayBytes(
+                                                new Mensagem(
+                                                        this.relogioVirtual.getTempo()
+                                                )
+                                        )
                                 ),
                                 this.processos.getMestre().getEndereco(), this.processos.getMestre().getPorta()
                         );
@@ -165,7 +173,12 @@ public class Controle {
                 if (this.processos.idExistente(mensagem.getIdRemetente())) {
                     int index = this.processos.getIndexPorID(mensagem.getIdRemetente());
                     this.processos.setMomentoChegada(index, this.relogioVirtual.getTempo());
-                    this.processos.setTempo(index, mensagem.getMensagem().getTempo());
+                    try {
+                        this.processos.setTempo(index, Mensagem.converteArrayBytesParaMensagem(mensagem.getMensagem()).getTempo());
+                    } catch (IOException | ClassNotFoundException e) {
+                        e.printStackTrace();
+                        System.exit(1);
+                    }
                     this.tela.adicionarLog("Recebendo tempo de " + mensagem.getIdRemetente());
 
                 } else {
@@ -173,8 +186,14 @@ public class Controle {
                 }
 
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.AJUSTE_TEMPO && this.processos.getMestre() != null && this.processos.getMestre().getIdentificador().equals(mensagem.getIdRemetente())) {
-                this.relogioVirtual.somarTempo(mensagem.getMensagem().getTempo());
-                this.tela.adicionarLog("Ajustando relogio em " + mensagem.getMensagem().getTempo() + " segundos");
+                try {
+                    this.relogioVirtual.somarTempo(Mensagem.converteArrayBytesParaMensagem(mensagem.getMensagem()).getTempo());
+                    this.tela.adicionarLog("Ajustando relogio em " + Mensagem.converteArrayBytesParaMensagem(mensagem.getMensagem()).getTempo() + " segundos");
+                } catch (IOException | ClassNotFoundException e) {
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+
             } else {
                 this.tela.adicionarLog("Chegou uma mensagem não tratavel de " + mensagem.getIdRemetente());
             }
@@ -194,7 +213,7 @@ public class Controle {
                                     mensagem.getIdRemetente(),
                                     InetAddress.getByName(mensagem.getIdRemetente().split("/")[0]),
                                     Integer.parseInt(mensagem.getIdRemetente().split("/")[1]),
-                                    mensagem.getMensagem().getChavePublica(),
+                                    Mensagem.converteArrayBytesParaMensagem(mensagem.getMensagem()).getChavePublica(),
                                     false
                             )
                     )
@@ -203,11 +222,11 @@ public class Controle {
             } else {
                 this.tela.adicionarLog("Processo " + mensagem.getIdRemetente() + " já existe");
             }
-
-        } catch (UnknownHostException e) {
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            this.tela.adicionarLog("Falha ao adicionar processo de id: " + mensagem.getIdRemetente());
+            System.exit(1);
         }
+
     }
 
     //Esta função torna o próprio processo um mestre

@@ -1,6 +1,6 @@
 package Sockets.Model;
 
-import Sockets.Model.Mensagem.Mensagem;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 
@@ -9,8 +9,8 @@ public class PacoteMensagem implements Serializable {
     //Essa clase contém a definição da estrutura do pacote de mensagens que será trocada pelos processos
     private String idRemetente;
     private byte tipoMensagem;
-    private Mensagem mensagem;
-    private byte[] assinatura;
+    private byte[] mensagem;
+    private byte[] assinaturaMensagem;
 
 
     //definição dos tipos de mensagem possíveis
@@ -34,33 +34,33 @@ public class PacoteMensagem implements Serializable {
     public static final byte AJUSTE_TEMPO = 5;
 
 
-    public PacoteMensagem(String idRemetente, byte tipoMensagem, Mensagem mensagem) {
+    public PacoteMensagem(String idRemetente, byte tipoMensagem,@NotNull byte[] mensagem) {
         this.idRemetente = idRemetente;
         this.tipoMensagem = tipoMensagem;
         this.mensagem = mensagem;
-        this.assinatura = null;
+        this.assinaturaMensagem = null;
     }
 
-    public PacoteMensagem(String idRemetente, byte tipoMensagem, Mensagem mensagem, byte[] assinatura) {
+    public PacoteMensagem(String idRemetente, byte tipoMensagem,@NotNull byte[] mensagem, byte[] assinaturaMensagem) {
         this.idRemetente = idRemetente;
         this.tipoMensagem = tipoMensagem;
         this.mensagem = mensagem;
-        this.assinatura = assinatura;
+        this.assinaturaMensagem = assinaturaMensagem;
     }
 
-    public byte[] getAssinatura() {
-        return assinatura;
+    public byte[] getAssinaturaMensagem() {
+        return assinaturaMensagem;
     }
 
-    public void setAssinatura(byte[] assinatura) {
-        this.assinatura = assinatura;
+    public void setAssinaturaMensagem(byte[] assinaturaMensagem) {
+        this.assinaturaMensagem = assinaturaMensagem;
     }
 
-    public Mensagem getMensagem() {
+    public byte[] getMensagem() {
         return this.mensagem;
     }
 
-    public void setMensagem(Mensagem mensagem) {
+    public void setMensagem(byte[] mensagem) {
         this.mensagem = mensagem;
     }
 

@@ -76,14 +76,16 @@ public class CorrigeTempo extends TimerTask {
                                 new PacoteMensagem(
                                         this.controle.processos.getEsteProcesso().getIdentificador(),
                                         PacoteMensagem.AJUSTE_TEMPO,
-                                        new Mensagem(
-                                                (
-                                                        (this.controle.processos.getProcessoEspecifico(contador).getTempo() +
-                                                                (
-                                                                        this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()
-                                                                ) / 2
-                                                        ) - mediaTempo
-                                                ) * -1L
+                                        Mensagem.converteMensagemParaArrayBytes(
+                                                new Mensagem(
+                                                        (
+                                                                (this.controle.processos.getProcessoEspecifico(contador).getTempo() +
+                                                                        (
+                                                                                this.controle.processos.getProcessoEspecifico(contador).getMomentoChegada() - this.controle.processos.getProcessoEspecifico(contador).getMomentoEnvio()
+                                                                        ) / 2
+                                                                ) - mediaTempo
+                                                        ) * -1L
+                                                )
                                         )
                                 ),
                                 this.controle.processos.getProcessoEspecifico(contador).getEndereco(),
@@ -120,7 +122,9 @@ public class CorrigeTempo extends TimerTask {
                             new PacoteMensagem(
                                     this.controle.processos.getEsteProcesso().getIdentificador(),
                                     PacoteMensagem.REQUISICAO_TEMPO,
-                                    null
+                                    Mensagem.converteMensagemParaArrayBytes(
+                                            new Mensagem(0L)
+                                    )
                             ),
                             this.controle.processos.getProcessoEspecifico(contador).getEndereco(),
                             this.controle.processos.getProcessoEspecifico(contador).getPorta()

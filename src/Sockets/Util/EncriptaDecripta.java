@@ -33,15 +33,15 @@ public class EncriptaDecripta {
     /**
      * Decriptografa o texto puro usando chave publica.
      */
-    public static boolean verificaAssinatura(byte[] texto, PublicKey chave, byte[] sig) {
+    public static boolean verificaAssinatura(byte[] dados, PublicKey chavePublica, byte[] assinatura) {
         Signature signature;
         boolean compativel = false;
 
         try {
             signature = Signature.getInstance("SHA256withDSA");
-            signature.initVerify(chave);
-            signature.update(texto);
-            compativel = signature.verify(sig);
+            signature.initVerify(chavePublica);
+            signature.update(dados);
+            compativel = signature.verify(assinatura);
 
         } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException ex) {
             System.out.println("Erro ao verificar mensagem");
@@ -50,7 +50,7 @@ public class EncriptaDecripta {
     }
 
     /**
-     * Gera a chave que contém um par de chave Privada e Pública usando 1025
+     * Gera a chave que contém um par de chave Privada e Pública usando 2048
      * bytes. Armazena o conjunto de chaves nas variáveis chavePrivade
      * e chavePublica
      */

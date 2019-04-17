@@ -92,12 +92,15 @@ public class ProcessoDAO {
 
     public Boolean adicionarProcesso(Processo processo) {
         if (this.idExistente(processo.getIdentificador())) {
-            if (this.esteProcesso.getIdentificador().equals(processo.getIdentificador())) {
+            if (this.esteProcesso.getIdentificador().equals(processo.getIdentificador()) &&
+                    this.esteProcesso.getChavePublica() != processo.getChavePublica()) {
                 this.esteProcesso.setChavePublica(processo.getChavePublica());
                 return false;
             }
             for (int contador = 0; contador < this.listaProcessos.size(); contador++) {
-                if (this.listaProcessos.get(contador).getIdentificador().equals(processo.getIdentificador())) {
+                if (this.listaProcessos.get(contador).getIdentificador().equals(processo.getIdentificador()) &&
+                        this.listaProcessos.get(contador).getChavePublica() != processo.getChavePublica()
+                ) {
                     this.listaProcessos.get(contador).setChavePublica(processo.getChavePublica());
                     return false;
                 }

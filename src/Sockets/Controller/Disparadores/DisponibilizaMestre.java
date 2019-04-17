@@ -37,7 +37,11 @@ public class DisponibilizaMestre extends TimerTask {
                                 new PacoteMensagem(
                                         this.controle.processos.getEsteProcesso().getIdentificador(),
                                         PacoteMensagem.DISPONIVEL,
-                                        new Mensagem(this.controle.processos.getEsteProcesso().getChavePublica())
+                                        Mensagem.converteMensagemParaArrayBytes(
+                                                new Mensagem(
+                                                        this.controle.processos.getEsteProcesso().getChavePublica()
+                                                )
+                                        )
                                 )
                         )
                 );
