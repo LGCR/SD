@@ -1,9 +1,12 @@
 package Sockets.Controller;
 
 import Sockets.Model.PacoteMensagem;
+import Sockets.Util.EncriptaDecripta;
 
 import java.io.IOException;
 import java.net.*;
+import java.security.Signature;
+import java.security.SignatureException;
 
 public class ControleUnicast extends Thread {
 
@@ -39,15 +42,29 @@ public class ControleUnicast extends Thread {
         return this.unicastSocket.getLocalAddress();
     }
 
-    public synchronized void enviarMensagem(byte[] mensagem, InetAddress endereco, int porta) {
+    public synchronized Boolean enviarMensagem(PacoteMensagem pacote, InetAddress endereco, int porta) throws IOException, SignatureException {
+
+        //Adiciona a assinatura no pacote
+        pacote.setAssinatura(
+                EncriptaDecripta.assina(
+                        PacoteMensagem.convertePacoteMensagemParaArrayBytes(pacote),
+                        this.controle.processos.getChavePrivada()
+                ).sign()
+        );
+
+        //transoforma o pacote em array de bytes
+        byte[] mensagem = PacoteMensagem.convertePacoteMensagemParaArrayBytes(pacote);
+
 
         //Essa fução encapsula a mensagem e envia para a porta e endereço passado como parâmetro
         try {
             this.unicastSocket.send(new DatagramPacket(mensagem, mensagem.length, endereco, porta));
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Erro ao enviar mensagem");
         }
+        System.out.println("Erro ao enviar mensagem");
+        return false;
     }
 
     @Override
@@ -57,33 +74,34 @@ public class ControleUnicast extends Thread {
         while (true) {
 
             //instancia o datagrama com 0.5MB de buffer
-            DatagramPacket mensagemRecebida = new DatagramPacket(new byte[5120], 5120);
+            DatagramPacket mensagemRecebida = new DatagramPacket(new byte[1024], 1024);
 
             //Litener bloqueante de leitura do socket
             try {
                 this.unicastSocket.receive(mensagemRecebida);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-            try {
-                this.controle.tratadorMensagens(
-                        PacoteMensagem.converteArrayBytesParaPacoteMensagem(
+                PacoteMensagem mensagem = PacoteMensagem.converteArrayBytesParaPacoteMensagem(mensagemRecebida.getData());
 
-                                mensagemRecebida.getData()
-
-
+                if (
+                        EncriptaDecripta.verificaAssinatura(
+                                mensagemRecebida.getData(),
+                                this.controle.processos.getProcessoEspecifico(
+                                        this.controle.processos.getIndexPorID(
+                                                mensagem.getIdRemetente()
+                                        )
+                                ).getChavePublica(),
+                                mensagem.getAssinatura()
                         )
-                );
-            } catch (IOException e) {
+                ) {
+                    this.controle.tratadorMensagens(mensagem);
+                } else {
+                    this.controle.tela.adicionarLog("Assinatura de " + mensagem.getIdRemetente() + " não correspondente!");
+                }
+                continue;
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
-                this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");
             }
-
-
+            this.controle.tela.adicionarLog("Erro ao tratar nova mensagem unicast");
         }
     }
 }

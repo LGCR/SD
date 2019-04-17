@@ -13,42 +13,40 @@ public class EncriptaDecripta {
 
 
     /**
-     * Criptografa o texto puro usando chave pública.
+     * Criptografa o texto puro usando chave privada.
      */
-    public static byte[] criptografa(byte[] texto, PublicKey chave) {
-        byte[] cipherText = null;
+    public static Signature assina(byte[] texto, PrivateKey chave) {
+        Signature signature = null;
 
         try {
-            final Cipher cipher = Cipher.getInstance("RSA");
-            // Criptografa o texto puro usando a chave Púlica
-            cipher.init(Cipher.ENCRYPT_MODE, chave);
-            cipherText = cipher.doFinal(texto);
+            signature = Signature.getInstance("SHA256withDSA");
+            signature.initSign(chave);
+            signature.update(texto);
+            signature.sign();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return cipherText;
+        return signature;
     }
 
     /**
-     * Decriptografa o texto puro usando chave privada.
+     * Decriptografa o texto puro usando chave publica.
      */
-    public static byte[] decriptografa(byte[] texto, PrivateKey chave) {
-        byte[] dectyptedText;
+    public static boolean verificaAssinatura(byte[] texto, PublicKey chave, byte[] sig) {
+        Signature signature;
+        boolean compativel = false;
 
         try {
-            final Cipher cipher = Cipher.getInstance("RSA");
-            // Decriptografa o texto puro usando a chave Privada
-            cipher.init(Cipher.DECRYPT_MODE, chave);
-            dectyptedText = cipher.doFinal(texto);
+            signature = Signature.getInstance("SHA256withDSA");
+            signature.initVerify(chave);
+            signature.update(texto);
+            compativel = signature.verify(sig);
 
-        } catch (InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex) {
-            System.out.println("Erro ao decriptografar mensagem");
-            return null;
+        } catch (InvalidKeyException | NoSuchAlgorithmException | SignatureException ex) {
+            System.out.println("Erro ao verificar mensagem");
         }
-
-        assert dectyptedText != null;
-        return dectyptedText;
+        return compativel;
     }
 
     /**
@@ -59,8 +57,8 @@ public class EncriptaDecripta {
     public static KeyPair geraChave() {
         final KeyPairGenerator keyGen;
         try {
-            keyGen = KeyPairGenerator.getInstance("RSA");
-            keyGen.initialize(1024);
+            keyGen = KeyPairGenerator.getInstance("DSA");
+            keyGen.initialize(2048);
             return keyGen.generateKeyPair();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();

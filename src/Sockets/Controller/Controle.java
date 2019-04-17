@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyPair;
+import java.security.SignatureException;
 import java.util.Timer;
 
 public class Controle {
@@ -45,8 +46,6 @@ public class Controle {
         //Aqui será instanciado a classe que lidará com a comunicação unicast
         this.controleUnicast = new ControleUnicast(this);
         this.tela.adicionarLog("Instanciando controlador unicast");
-
-
         //Gera um par de chaves
         KeyPair chaves = EncriptaDecripta.geraChave();
 
@@ -130,7 +129,7 @@ public class Controle {
                 if (this.processos.getMestre() != null && this.processos.getMestre().getIdentificador().equals(mensagem.getIdRemetente())) {
                     this.verificaMestre.mestreDisponivel();
                 } else if (this.processos.getMestre() == null) {
-                    if(!this.processos.idExistente(mensagem.getIdRemetente())) {
+                    if (!this.processos.idExistente(mensagem.getIdRemetente())) {
                         this.adicionarProcessoPacoteMensagem(mensagem);
                     }
                     this.processos.setMestre(mensagem.getIdRemetente());
@@ -141,23 +140,23 @@ public class Controle {
             } else if (mensagem.getTipoMensagem() == PacoteMensagem.REQUISICAO_TEMPO) {
                 if (mensagem.getIdRemetente().equals(this.processos.getMestre().getIdentificador())) {
                     try {
-                        this.controleUnicast.enviarMensagem(
-
-                                PacoteMensagem.convertePacoteMensagemParaArrayBytes(
+                        if (
+                                this.controleUnicast.enviarMensagem(
                                         new PacoteMensagem(
                                                 this.processos.getEsteProcesso().getIdentificador(),
                                                 PacoteMensagem.RESPOSTA_TEMPO,
                                                 new Mensagem(this.relogioVirtual.getTempo())
-                                        )
-
-                                ), this.processos.getMestre().getEndereco(), this.processos.getMestre().getPorta()
-                        );
-                        this.tela.adicionarLog("Enviando tempo para o mestre");
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                                        ),
+                                        this.processos.getMestre().getEndereco(), this.processos.getMestre().getPorta()
+                                )
+                        ) {
+                            this.tela.adicionarLog("Enviando tempo para o mestre");
+                        }
+                    } catch (IOException | SignatureException e) {
                         this.tela.adicionarLog("Falha ao enviar tempo para o mestre");
+                        e.printStackTrace();
                     }
-
+                    this.tela.adicionarLog("Falha ao enviar tempo para o mestre");
                 } else {
                     this.tela.adicionarLog("Ignorando falso mestre: " + mensagem.getIdRemetente());
                 }

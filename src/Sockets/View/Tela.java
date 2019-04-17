@@ -1,7 +1,6 @@
 package Sockets.View;
 
 import Sockets.Controller.Controle;
-import Sockets.Model.Processo;
 
 import java.util.ArrayList;
 import java.util.TimerTask;
@@ -25,11 +24,14 @@ public class Tela extends TimerTask {
 
     //adiciona e controla o tamanho do log
     public synchronized void adicionarLog(String mensagem) {
-        this.log.add(mensagem);
-        //essa variave
-        byte tamanhoMaxLog = 15;
-        if (this.log.size() > tamanhoMaxLog)
-            this.log.remove(0);
+        //Adição de bloco de código syncronizado
+        synchronized (this) {
+            this.log.add(mensagem);
+            //essa variave
+            byte tamanhoMaxLog = 15;
+            if (this.log.size() > tamanhoMaxLog)
+                this.log.remove(0);
+        }
     }
 
     //imrpime uma mensagem mantendo o tamanho da tela estavel
@@ -70,8 +72,12 @@ public class Tela extends TimerTask {
             this.impressaoLinhaAdaptavel("Processo " + contador + ": " + this.controle.processos.getProcessoEspecifico(contador).getIdentificador());
         this.impressaoQuebraLinha();
         this.impressaoLinhaAdaptavel("\t -> Lista de logs:");
-        for (int contador = 0; contador < this.log.size(); contador++) {
-            this.impressaoLinhaAdaptavel(this.log.get(contador));
+
+        //Adição de bloco de código syncronizado
+        synchronized (this) {
+            for (int contador = 0; contador < this.log.size(); contador++) {
+                this.impressaoLinhaAdaptavel(this.log.get(contador));
+            }
         }
         this.impressaoQuebraLinha();
     }

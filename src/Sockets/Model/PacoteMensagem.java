@@ -10,6 +10,7 @@ public class PacoteMensagem implements Serializable {
     private String idRemetente;
     private byte tipoMensagem;
     private Mensagem mensagem;
+    private byte[] assinatura;
 
 
     //definição dos tipos de mensagem possíveis
@@ -37,6 +38,22 @@ public class PacoteMensagem implements Serializable {
         this.idRemetente = idRemetente;
         this.tipoMensagem = tipoMensagem;
         this.mensagem = mensagem;
+        this.assinatura = null;
+    }
+
+    public PacoteMensagem(String idRemetente, byte tipoMensagem, Mensagem mensagem, byte[] assinatura) {
+        this.idRemetente = idRemetente;
+        this.tipoMensagem = tipoMensagem;
+        this.mensagem = mensagem;
+        this.assinatura = assinatura;
+    }
+
+    public byte[] getAssinatura() {
+        return assinatura;
+    }
+
+    public void setAssinatura(byte[] assinatura) {
+        this.assinatura = assinatura;
     }
 
     public Mensagem getMensagem() {
